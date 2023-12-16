@@ -1,0 +1,35 @@
+/* #pessoas {
+    width: 100%;
+    height: 100%;
+} */
+
+#tablePessoas {
+    width: 100%;
+    border: 1px solid black;
+    border-collapse: collapse;
+}
+#tablePessoas th {
+    border: 1px solid black;
+    padding: 5px;
+    background: #0c028d;
+    color: white;
+}
+
+#tablePessoas tbody tr:nth-child(even) {
+    background: #f4f1ff;
+}
+
+#tablePessoas tbody tr:nth-child(odd) {
+    background: #d6dbfd;
+}
+
+#tablePessoas tbody tr:hover {
+    background: #b3b9ff;
+}
+
+#tablePessoas td {
+    border: 1px solid black;
+    padding: 5px;
+    text-align: center;
+}
+

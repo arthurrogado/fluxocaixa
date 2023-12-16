@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Evitar Abertura de Select</title>
+    <style>
+        /* Apenas para tornar o exemplo mais visualmente interessante */
+        body {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+        }
+    </style>
+</head>
+<body>
+
+    <select id="meuSelect">
+        <option value="opcao1">Opção 1</option>
+        <option value="opcao2">Opção 2</option>
+        <option value="opcao3">Opção 3</option>
+    </select>
+
+    <script>
+        document.getElementById('meuSelect').addEventListener('mousedown', function (event) {
+            event.preventDefault();
+            // O restante do seu código pode ser adicionado aqui
+        });
+    </script>
+
+</body>
+</html>

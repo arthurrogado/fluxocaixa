@@ -1,0 +1,254 @@
+:root {
+    --picker-color: hsl(244, 100%, 50%);
+    --success-color: #07aa3e;
+    --danger-color: darkred;
+
+    /* 
+    make color based on primary color, just change the hue
+    */
+    --hue: 244;
+    --primary-color: hsl(var(
+    --hue), 100%, 25%);
+    --secondary-color: hsl(var(
+    --hue), 100%, 40%);
+    --tertiary-color: hsl(var(
+    --hue), 100%, 55%);
+
+    --dark-color-1: hsl(var(
+    --hue), 100%, 20%);
+    --dark-color-2: hsl(var(
+    --hue), 100%, 15%);
+    --dark-color-3: hsl(var(
+    --hue), 100%, 5%);
+
+    --light-color-1: hsl(var(
+    --hue), 100%, 80%);
+    --light-color-2: hsl(var(
+    --hue), 100%, 85%);
+    --light-color-3: hsl(var(
+    --hue), 100%, 90%);
+    --light-color-4: hsl(var(
+    --hue), 100%, 98%);
+
+    --neutral-color-1: hsl(var(
+    --hue), 10%, 80%);
+    --neutral-color-2: hsl(var(
+    --hue), 10%, 60%);
+    --neutral-color-3: hsl(var(
+    --hue), 10%, 40%);
+
+    --yellow-color: hsl(44, 84%, 35%);
+    --blue-color: hsl(244, 84%, 35%);
+    --green-color: hsl(144, 84%, 35%);
+}
+
+.danger {
+    color: var(--danger-color);
+}
+.bg-danger {
+    background: var(--danger-color);
+}
+
+.success {
+    color: var(--success-color);
+}
+.bg-success {
+    background: var(--success-color);
+}
+
+.default {
+    color: var(--primary-color);
+}
+.bg-default {
+    background: var(--primary-color);
+}
+
+.primary {
+    color: var(--primary-color);
+}
+.bg-primary {
+    background: var(--primary-color);
+}
+
+.secondary {
+    color: var(--secondary-color);
+}
+.bg-secondary {
+    background: var(--secondary-color);
+}
+
+
+
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+#app {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+}
+
+#headerApp {
+    background: var(--primary-color);
+    background: linear-gradient(0deg, var(--primary-color), var(--dark-color-3));
+    color: white;
+    font-size: 1.5rem;
+    padding: .5rem;
+
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+
+    position: sticky;
+    top: 0;
+
+    height: 4rem;
+}
+#headerApp > div {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+#controlSidebar{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    aspect-ratio: 1;
+    padding: .5rem;
+    cursor: pointer;
+}
+#informacoesUsuario {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    font-size: 1rem;
+}
+#informacoesUsuario > a {
+    color: white;
+    background-color: var(--danger-color);
+    padding: .2rem .4rem;
+    border-radius: 5px;
+    margin: 0 .5rem;
+}
+
+
+#content {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    height: calc(100% - 4rem);
+}
+
+
+nav {
+    display: flex;
+    flex-direction: column;
+    /* width: 20%; */
+    /* min-width: 150px; */
+
+    background: var(--primary-color);
+    color: white;
+    min-width: 0px;
+    width: 0px;
+    transition: .3s ease-in-out;
+    padding: 0 5px;
+}
+nav.active {
+    width: 200px;
+    min-width: 200px;
+}
+
+
+nav .nav-item {
+    padding: 10px;
+    /* border-bottom: 1px solid var(--neutral-color-1); */
+    box-shadow: 0px 5px 5px -5px var(--neutral-color-1);
+    margin-bottom: .6rem;
+    transition: .2s;
+    border-radius: .5rem;
+}
+nav .nav-item:last-child {
+    margin-bottom: 0;
+}
+
+nav .nav-item:hover {
+    background: var(--tertiary-color);
+    cursor: pointer;
+}
+
+nav .divisor {
+    text-align: center;
+    margin-top: 1rem;
+    font-size: .8rem;
+    border-bottom: 1px solid var(--neutral-color-3);
+}
+
+.caixa_itens {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    margin: .5rem 0;
+    padding: 10px;
+    border-radius: 1rem;
+    background-color: var(--secondary-color);
+}
+
+
+main {
+    background: #e6e6e6;
+    width: 100%;
+    margin: 0 5px;
+
+    /* height: calc(100vh - 60px); */
+    overflow-y: auto;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+/* 
+set scroll bar style
+*/
+main::-webkit-scrollbar {
+    width: 10px;
+}
+
+main::-webkit-scrollbar-track {
+    background: var(--light-color-3);
+    border-radius: 5px;
+}
+
+main::-webkit-scrollbar-thumb {
+    background: var(--primary-color);
+    border-radius: 5px;
+}
+
+main section {
+    width: 100%;
+    height: 100%;
+}
+
+/* 
+Set all scroll bar
+*/
+::-webkit-scrollbar {
+    width: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--light-color-3);
+    border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--primary-color);
+    border-radius: 5px;
+}

@@ -1,0 +1,14 @@
+<div class="card">
+
+    <h1 class="title">Produtos</h1>
+
+    <?php
+        $produtos = $this->view->data['data'];
+        foreach($produtos as $produto) {
+            echo "<strong>" . $produto->descricao . "</strong>";
+            echo "<br>";
+            echo "R$ " . $produto->preco . "<br><br>";
+        }
+    ?>
+    
+</div>

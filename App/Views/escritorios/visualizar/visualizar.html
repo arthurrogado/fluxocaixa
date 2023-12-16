@@ -1,0 +1,36 @@
+<section class="card">
+
+    <div class="title">
+        <h1>Visualizar escritório</h1>
+    </div>
+
+    <form id="formVisualizarEscritorio" class="w3-container">
+
+        <div class="input-field">
+            <input type="text" name="nome" required readonly>
+            <label>Nome do escritório</label>
+        </div>
+        <div class="input-field">
+            <input type="text" name="cnpj" required readonly>
+            <label>CNPJ</label>
+        </div>
+        <div class="input-field">
+            <textarea name="observacoes" cols="30" rows="5" required readonly></textarea>
+            <label>Observações</label>
+        </div>
+
+        <button class="btn bg-secondary" type="button" onclick="window.history.back()">
+            <i class="fa fa-arrow-left"></i> Voltar
+        </button>
+
+        <button type="button" class="btn btn-primary" id="btn_editar">
+            <i class="fa fa-pencil"></i>
+            Editar
+        </button>
+
+
+    </form>
+    
+    <div class="loading"></div>
+
+</section>

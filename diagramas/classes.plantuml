@@ -1,0 +1,51 @@
+@startuml
+
+class Usuario {
+    - id: int
+    - nome: string
+    - usuario: string
+    - senha: string
+    - id_escritorio: int
+
+}
+
+class Escritorio {
+    - id: int
+    - nome: string
+    - cnpj: string
+    - observacoes: string
+}
+
+class Caixa {
+    - id: int
+    - nome: string
+    - observacoes: string
+    - id_escritorio: int
+    - id_usuario_abertura: int
+    - id_usuario_fechamento: int
+
+    + abrirCaixa()
+    + fecharCaixa() 
+    ' ao fechar o caixa, o sistema deve gerar um relatório com todas as operações realizadas no dia e abrir de novo.
+}
+
+class Operacao {
+    - id: int
+    - nome: string
+    - observacoes: string
+    - id_caixa: int
+    - id_usuario: int
+    - data: date
+    - data_criacao: date
+    - valor: float
+    - tipo: string
+    - forma_pagamento: string
+}
+
+Usuario "0..* " -- "1" Escritorio : Trabalha
+Usuario "1" -- "0..*" Operacao: Realiza
+
+Escritorio "1" -- "0..*" Caixa: Possui
+Caixa "1" -- "0..*" Operacao: Possui
+
+@enduml

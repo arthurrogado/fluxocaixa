@@ -1,0 +1,36 @@
+<section>
+    <div class="card">
+
+        <div class="title">
+            <h1>Visualizar usuário</h1>
+        </div>
+
+        <form id="formVisualizarPessoa">
+
+            <div class="input-field">
+                <input type="text" name="nome" required disabled>
+                <label for="nome">Nome</label>
+            </div>
+
+            <div class="input-field">
+                <input type="text" name="usuario" required disabled>
+                <label>Usuário</label>
+            </div>
+
+            <div class="input-field">
+                <select name="cnpj_escritorio" id="cnpj_escritorio" disabled>
+                    <option value=""></option>
+                </select>
+                <label>Escritório</label>
+            </div>
+
+            <button class="btn btn-primary" id="btn_editar" type="button"> <i class="fa fa-pencil"></i> Editar</button>            
+            <a href="#" id="modalMudarSenha">Mudar senha</a>
+
+            <span class="loading" id="loadingVisualizarUsuario"></span>
+
+        </form>
+
+    </div>
+
+</section>
