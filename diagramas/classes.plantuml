@@ -16,6 +16,19 @@ class Escritorio {
     - observacoes: string
 }
 
+class acoes_sistema {
+    - id: int
+    - controller: String
+    - method: String
+    - description: String
+}
+
+class permissoes {
+    - id: int
+    - id_usuario: int
+    - id_acao: int
+}
+
 class Caixa {
     - id: int
     - nome: string
@@ -23,10 +36,12 @@ class Caixa {
     - id_escritorio: int
     - id_usuario_abertura: int
     - id_usuario_fechamento: int
+    - data_abertura: datetime
+    - data_fechamento: datetime
 
     + abrirCaixa()
-    + fecharCaixa() 
-    ' ao fechar o caixa, o sistema deve gerar um relatório com todas as operações realizadas no dia e abrir de novo.
+    + fecharCaixa()
+    + getCaixas()
 }
 
 class Operacao {
@@ -41,6 +56,15 @@ class Operacao {
     - tipo: string
     - forma_pagamento: string
 }
+
+class FormaPagamento {
+    - id: int
+    - nome: string
+    - observacoes: string
+}
+
+permissoes "1" -- "0..*" acoes_sistema: Possui
+permissoes "0..*" -- "1" Usuario: Possui
 
 Usuario "0..* " -- "1" Escritorio : Trabalha
 Usuario "1" -- "0..*" Operacao: Realiza
