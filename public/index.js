@@ -19,6 +19,17 @@ document.querySelectorAll('nav').forEach(el => {
     })
 })
 
+// ESTUCADORES
+
+// Botão logout
+document.querySelector('#logout').addEventListener('click', () => {
+    httpClient.makeRequest('/logout')
+    .then(response => {
+        console.log(response)
+    })
+    httpClient.navigateTo('/login')
+})
+
 // Controlar o sidebar
 document.querySelector('#controlSidebar').addEventListener('click', () => {
     document.querySelector('nav').classList.toggle('active')
@@ -38,6 +49,7 @@ const verificarTamanhoTela = async () => {
 window.addEventListener('resize', async () => {
     await verificarTamanhoTela()
 })
+
 
 window.verificarTamanhoTela = verificarTamanhoTela
 

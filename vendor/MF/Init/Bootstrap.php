@@ -24,40 +24,10 @@ abstract class Bootstrap {
     protected function run($url) {
         foreach($this->getRoutes() as $key => $route) {
 
-            // Rodar os middlewares necessários, como exemplo:
-            // AuthMiddleware (para verificar se está logado),
-            // PermissionMiddleware (para verificar se tem permissão para acessar a página)
-            // eu deveria criar um Middleware específico, tipo um para verificar se a obra e o usuário são do mesmo escritório?
-            // ou eu poderia criar um middleware genérico, que recebe como parâmetro o nome do model e o nome do método?
-            // resposta: acho que o melhor é criar um middleware genérico, que recebe como parâmetro o nome do model e o nome do método, dessa forma:
-            // $routes['create_pessoa'] = array(
-            //     'route' => '/pessoas/create',
-            //     'controller' => 'PessoasController',
-            //     'action' => 'createPessoa',
-            //     'middlewares' => ['AuthMiddleware', 'PermissionMiddleware']
-            // );
-            // e o middleware genérico verifica se o usuário tem permissão para acessar o método do model
-
-            // Exemplo de utilização do middleware de verificar a permissão:
-            // class PermissionMiddleware implements Middleware {
-            //     public function handle($user, $model, $method) {
-            //         // verificar se o usuário tem permissão para acessar o método do model
-            //         // verificar se o usuário tem permissão para acessar a página
-            //         // verificar se o usuário tem permissão para acessar o controller
-            //         // verificar se o usuário tem permissão para acessar a rota
-            //          $user->hasPermission($model, $method);
-
-            //     }
-            
-
-
-
             // define a default route if "route->redirect" exists
             if(isset($route['redirect']) && $url == $route['route']) {
                 $url = $route['redirect'];
             }
-
-
 
 
             if(isset($route['route']) && $url == $route['route']) {
@@ -71,9 +41,7 @@ abstract class Bootstrap {
                     }
                 }
 
-
-
-                // renomear, por exemplo, o controller "Pages/Pessoas" para "Pages\Pessoas"
+                // rename, for example, controller "Pages/Pessoas" to "Pages\Pessoas"
                 $route['controller'] = str_replace("/", "\\", $route['controller']);
 
                 $class = "App\\Controllers\\".ucfirst($route['controller']);
@@ -95,9 +63,8 @@ abstract class Bootstrap {
 
     protected function getUrl() {
         // return parse_url($_SERVER['PATH_INFO'], PHP_URL_PATH);
-        
         $request_url = $_SERVER['REQUEST_URI'];
-        // Remover o primeiro "/api" da url, usado apenas para referência
+        // Remove the first "/api" from url, used just for reference
         $request_url = substr($request_url, 4);
         return parse_url( $request_url , PHP_URL_PATH);
     }

@@ -148,6 +148,24 @@ class Route extends Bootstrap {
             'action' => 'excluirEscritorio'
         ]);
 
+        // CAIXAS
+            // pages
+        array_push($routes, [
+            'route' => '/caixas',
+            'redirect' => '/caixas/listar'
+        ]);
+        array_push($routes,[
+            'route' => '/caixas/listar',
+            'controller' => 'Pages/CaixasPages',
+            'action' => 'listar'
+        ]);
+            // api
+        array_push($routes, [
+            'route' => '/api/caixas/listar',
+            'controller' => 'CaixasController',
+            'action' => 'listarCaixas'
+        ]);
+
 
         $this->setRoutes($routes);
     }

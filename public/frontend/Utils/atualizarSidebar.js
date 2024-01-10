@@ -65,7 +65,10 @@ function atualizarSidebar(){
                 // Usuário comum
             } else {
                 itens = [
-                    ['/home', 'Home', 'fa-solid fa-home'],
+                    [['/home', 'Home', 'fa-solid fa-home']],
+                    [
+                        ['/caixas', 'Caixas financeiros', 'fas fa-cash']
+                    ]
                 ]
             }
 

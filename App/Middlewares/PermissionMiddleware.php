@@ -29,6 +29,23 @@ class PermissionMiddleware {
 
     }
 
+    public static function checkPermissions($action) {
+        // Modelo de permissões: tabela de ações no sistema e tabela intermediária entre essas ações e usuários que definem as permissões
+        $current_user = Usuario::checkLogin();
+
+        // Se for master, pode fazer tudo
+        if($current_user->id == 1) {
+            return true;
+        }
+
+        if(!$current_user) {
+            return false;
+        }
+
+        // Verificar se o usuário tem permissão para a ação usando PermissaoController
+
+    }
+
 }
 
 # exemplo de uso para verificar se o id_escritorio do usuario logado é igual ao id_escritorio da obra 
