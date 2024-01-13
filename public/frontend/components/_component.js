@@ -65,10 +65,11 @@ class _Component {
         })
 
         // Adicionar hash em todos os elementos filhos,
-        // para não dar conflito com outros componentes que tenham classes iguais
+        // para não dar conflito com outros componentes que tenham classes iguais,
         this.element.querySelectorAll('*').forEach(son => {
             son.classList.forEach(className => {
                 // Não adicionar o hash em classes que não estejam no css do componente
+                // Dessa forma uma classe como 'w3-container' não terá o hash adicionado
                 if(!this.styles.textContent.includes(className) || className.includes('fa') ) return;
 
                 son.classList.remove(className);

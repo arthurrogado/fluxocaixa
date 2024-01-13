@@ -158,6 +158,17 @@ class Table extends _Component {
             tr.append(th);
         }
 
+        // Se os dados forem vazios, indicar isso
+        if(data.length == 0) {
+            let infoDiv = document.createElement('div');
+            infoDiv.innerHTML = `
+                <div class="w3-panel w3-pale-red w3-leftbar w3-rightbar w3-border-red">
+                    <p>Nenhum dado encontrado!.</p>
+                </div>
+            `;
+            table.insertAdjacentElement('afterbegin', infoDiv);
+        }
+
         data?.forEach(element => {
             let row = document.createElement('tr');
             row.dataset.id = element?.id;

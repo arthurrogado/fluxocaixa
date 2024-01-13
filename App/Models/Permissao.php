@@ -14,6 +14,16 @@ class Permissao extends Model {
         );
     }
 
+    public function usuarioTemPermissao($id_usuario, $acao)
+    {
+        $status = $this->select(
+            "permissoes",
+            ["*"],
+            "id_usuario = $id_usuario AND acao = '$acao'"
+        );
+        return $status['ok'];
+    }
+
 }
 
 ?>

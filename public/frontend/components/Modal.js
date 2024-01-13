@@ -119,6 +119,17 @@ class Modal extends _Component {
         let footer = document.createElement('div');
         footer.classList.add('footer');
 
+        // EXEMPLO botões:
+        let buttons_example = [
+            {
+                class: 'primary',
+                text: 'Criar',
+                action: () => {
+                    console.log('Alguma coisa!')
+                }
+            }
+        ]
+
         this.buttons.forEach(btn => {
             let button = document.createElement('button');
             button.classList.add('btn', btn.class ?? 'btn-primary');

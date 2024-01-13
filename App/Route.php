@@ -165,6 +165,11 @@ class Route extends Bootstrap {
             'controller' => 'CaixasController',
             'action' => 'listarCaixas'
         ]);
+        array_push($routes, [
+            'route' => '/api/caixas/criar',
+            'controller' => 'CaixasController',
+            'action' => 'abrirCaixa'
+        ]);
 
 
         $this->setRoutes($routes);

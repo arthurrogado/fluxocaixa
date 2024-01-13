@@ -8,7 +8,8 @@ class Info extends Model {
     
     public function getInfo() {
         $query = "SELECT titulo, descricao FROM tb_info";
-        return $this->db->query($query)->fetchAll();
+        return self::$conn->query($query)->fetchAll();
+        // return $this->db->query($query)->fetchAll();
     }
 
 }

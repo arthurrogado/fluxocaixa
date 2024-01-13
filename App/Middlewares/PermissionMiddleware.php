@@ -4,6 +4,8 @@
 
 namespace App\Middlewares;
 use App\Models\Usuario;
+use MF\Model\Container as ModelContainer;
+use MF\Models\Container;
 
 class PermissionMiddleware {
 
@@ -42,7 +44,18 @@ class PermissionMiddleware {
             return false;
         }
 
-        // Verificar se o usuário tem permissão para a ação usando PermissaoController
+        // Verificar se o usuário tem permissão para a ação.
+        // Usar classe Model de Permissao para isso
+
+        $permissao = ModelContainer::getModel("Permissao");
+        $tem_permissao = $permissao->usuarioTemPermissao($current_user->id, $action);
+
+        if(!$tem_permissao) {
+            echo json_encode(["message" => "Você não tem permissão!", "ok" => false]);
+            exit;
+        }
+
+        return true;
 
     }
 

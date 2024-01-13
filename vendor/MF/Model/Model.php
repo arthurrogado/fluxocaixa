@@ -11,8 +11,17 @@ abstract class Model {
 
     protected static $conn;
 
-    public function __construct(\PDO $db) {
-        $this->db = $db;
+    // public function __construct(\PDO $db) {
+    //     $this->db = $db;
+    // }
+
+    public function __construct(\PDO $db = null) {
+        // $this->db = $db;
+        // $this->db = Connection::getDB();
+        
+        // Não existe a necessidade de passar um parâmetro para o construtor
+        // Pois o atributo $conn é estático e pode ser acessado diretamente
+        // de qualquer método da classe
     }
 
     public function __get($attr) {
