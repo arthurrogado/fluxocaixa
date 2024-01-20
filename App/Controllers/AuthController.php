@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Controllers;
-use MF\Model\Container;
+use App\Models\Usuario;
 
 class AuthController {
     
@@ -9,7 +9,9 @@ class AuthController {
         $usuario = filter_input(INPUT_POST, "usuario", FILTER_DEFAULT);
         $senha = filter_input(INPUT_POST, "senha", FILTER_DEFAULT);
         
-        $user = Container::getModel("Usuario");
+        // $user = Container::getModel("Usuario");
+        $user = new Usuario();
+
         $status = $user->login($usuario, $senha);
         if($status) {
             echo json_encode(array('ok' => true));
@@ -19,7 +21,7 @@ class AuthController {
     }
 
     public function logout() {
-        $user = Container::getModel("Usuario");
+        $user = new Usuario();
         if($user->logout()) {
             echo json_encode(array('ok' => true, "message" => "Logout feito com sucesso", "redirect" => "/login"));
         } else {
@@ -30,7 +32,8 @@ class AuthController {
     public function checkLogin()
     {
         // retornar dados do usuárioo logado (só não a senha)
-        $user = Container::getModel("Usuario");
+        // $user = Container::getModel("Usuario");
+        $user = new Usuario();
         $status = $user->checkLogin();
 
         if($status) {

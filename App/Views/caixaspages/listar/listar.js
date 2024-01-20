@@ -13,6 +13,36 @@ class ListarCaixas {
         document.querySelector('#btnAbrirCaixa').addEventListener('click', () => {
             this.abrirModalCriarCaixa();
         })
+        // let loading_caixas = this.httpClient.loading('#caixas');
+        // console.log(loading_caixas);
+    }
+
+    abrirModalExcluirCaixa(id) {
+        let modal = new Modal('body', 'Excluir Caixa', /*html*/`
+            <p>Deseja realmente excluir este caixa?</p>
+        `, [
+            {
+                text: "Cancelar",
+                class: "btn-primary",
+            },
+            {
+                class: 'btn-danger',
+                text: 'Excluir caixa',
+                action: () => {
+                    this.exluirCaixa(id);
+                    modal.close();
+                }
+            }
+        ]);
+    }
+
+    exluirCaixa(id) {
+        this.httpClient.makeRequest('/api/caixas/excluir', {id: id})
+        .then(response => {
+            if(response.ok) {
+                this.tabela.removeRowById(id);
+            }
+        })
     }
     
     obterCaixas() {
@@ -20,13 +50,19 @@ class ListarCaixas {
         .then(response => {
             console.log(response);
             if(response.ok) {
-                document.querySelector('#loadingTabelaCaixas').remove();
-                let tabela = new Table('#caixas', response.caixas,['id', 'nome'], ['ID', 'Nome'], [
+                document.querySelector('#loadingTabelaCaixas')?.remove();
+                document.querySelector('#caixas').innerHTML = '';
+                this.tabela = new Table('#caixas', response.caixas,['id', 'nome'], ['ID', 'Nome'], [
                     {
-                        text: 'Visualizar',
+                        text: '<i class="fa fa-eye"></i> Visualizar',
                         action: (id) => {
-                            httpClient.navigateTo('/caixas/visualizar', {id: id})
+                            this.httpClient.navigateTo('/caixas/visualizar', {id: id})
                         }
+                    },
+                    {
+                        text: '<i class="fa fa-trash"></i> Excluir',
+                        action: (id) => this.abrirModalExcluirCaixa(id),
+                        class: 'btn-danger'
                     }
                 ]);
             }
@@ -60,6 +96,7 @@ class ListarCaixas {
                     .then(response => {
                         if(response.ok) {
                             modal.close();
+                            this.obterCaixas();
                         }
                     })
                 }

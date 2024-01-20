@@ -1,8 +1,8 @@
 <?php
 
 namespace App\Controllers;
-use MF\Model\Container;
 use App\Middlewares\PermissionMiddleware;
+use App\Models\Usuario;
 
 class UsuariosController {
 
@@ -17,7 +17,7 @@ class UsuariosController {
         $senha = filter_input(INPUT_POST, 'senha');
         $cnpj_escritorio = filter_input(INPUT_POST, 'cnpj_escritorio');
 
-        $user = Container::getModel("Usuario");
+        $user = new Usuario();
         
         // Verifica se o $usuario já existe
         if( $user->usuarioExiste($usuario) ) {
@@ -35,7 +35,7 @@ class UsuariosController {
 
     public function getUsuarios()
     {
-        $user = Container::getModel("Usuario");
+        $user = new Usuario();
         $status = $user->getUsuarios();
         if($status['ok']) {
             echo json_encode(array('ok' => true, 'usuarios' => $status['data']));
@@ -47,7 +47,7 @@ class UsuariosController {
     public function visualizarUsuario()
     {
         $id = filter_input(INPUT_POST, 'id');
-        $user = Container::getModel("Usuario");
+        $user = new Usuario();
         $status = $user->visualizarUsuario($id);
         if($status['ok']) {
             echo json_encode(array('ok' => true, 'usuario' => $status['data']));
@@ -75,7 +75,7 @@ class UsuariosController {
             return;
         }
 
-        $user = Container::getModel("Usuario");
+        $user = new Usuario();
         $status = $user->editarUsuario($id, $nome, $usuario, $cnpj_escritorio);
         if($status['ok']) {
             echo json_encode(array('ok' => true, 'message' => "Usuário editado com sucesso"));
@@ -91,7 +91,7 @@ class UsuariosController {
         $id = filter_input(INPUT_POST, 'id');
         $senha = filter_input(INPUT_POST, 'senha');
 
-        $user = Container::getModel("Usuario");
+        $user = new Usuario();
         $status = $user->mudarSenhaUsuario($id, $senha);
         if($status['ok']) {
             echo json_encode(array('ok' => true, 'message' => "Senha alterada com sucesso"));
@@ -111,7 +111,7 @@ class UsuariosController {
             return;
         }
 
-        $user = Container::getModel("Usuario");
+        $user = new Usuario();
         $status = $user->excluirUsuario($id);
         if($status['ok']) {
             echo json_encode(array('ok' => true, 'message' => "Usuário excluído com sucesso"));

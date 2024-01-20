@@ -10,6 +10,11 @@ class CaixasPages extends Action {
         $this->render('listar');
     }
 
+    public function visualizar()
+    {
+        $this->render('visualizar');
+    }
+
 }
 
 ?>

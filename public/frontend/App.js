@@ -251,6 +251,13 @@ class HttpClient {
         }
     }
 
+    loading(parent = 'body') {
+        // document.querySelector(parent).innerHTML += '<div class="loading"></div>'
+        let loading_div = document.createElement('div');
+        loading_div.classList.add('loading');
+        document.querySelector(parent).appendChild(loading_div);
+    }
+
     disableAllInputs(parent = '.input-field') {
         document.querySelectorAll(`${parent} > input, ${parent} > select, ${parent} > textarea`).forEach(input => {
             input.setAttribute('disabled', true)

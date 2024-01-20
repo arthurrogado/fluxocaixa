@@ -213,6 +213,20 @@ class Table extends _Component {
         this.renderTable(data, this.headers);
     }
 
+    removeRowById(id) {
+        this.element.querySelector(`table tbody tr[data-id="${id}"]`)?.remove();
+        // If the table is empty, show the message
+        if(this.element.querySelector('table tbody tr') == null) {
+            let infoDiv = document.createElement('div');
+            infoDiv.innerHTML = `
+                <div class="w3-panel w3-pale-red w3-leftbar w3-rightbar w3-border-red">
+                    <p>Nenhum dado encontrado!.</p>
+                </div>
+            `;
+            this.element.querySelector('table').insertAdjacentElement('afterbegin', infoDiv);
+        }
+    }
+
 }
 
 export default Table;

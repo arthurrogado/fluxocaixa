@@ -1,8 +1,8 @@
 <?php
 
 namespace App\Controllers;
-use MF\Model\Container;
 use App\Middlewares\PermissionMiddleware;
+use App\Models\Escritorio;
 
 class EscritoriosController {
 
@@ -14,7 +14,7 @@ class EscritoriosController {
         $cnpj = filter_input(INPUT_POST, 'cnpj');
         $observacoes = filter_input(INPUT_POST, 'observacoes');
 
-        $escritorio = Container::getModel("Escritorio");
+        $escritorio = new Escritorio();
         
         $status = $escritorio->criarEscritorio($nome, $cnpj, $observacoes);
         if($status['ok']) {
@@ -26,7 +26,7 @@ class EscritoriosController {
 
     public function getEscritorios()
     {
-        $escritorio = Container::getModel("Escritorio");
+        $escritorio = new Escritorio();
         $status = $escritorio->getEscritorios();
         if($status['ok']) {
             echo json_encode(array('ok' => true, 'escritorios' => $status['data']));
@@ -37,7 +37,7 @@ class EscritoriosController {
 
     public function getEscritorio($id)
     {
-        $escritorio = Container::getModel("Escritorio");
+        $escritorio = new Escritorio();
         $status = $escritorio->getEscritorio($id);
         if($status['ok']) {
             echo json_encode(array('ok' => true, 'escritorio' => $status['data']));
@@ -49,7 +49,7 @@ class EscritoriosController {
     public function visualizarEscritorio()
     {
         $id = filter_input(INPUT_POST, 'id');
-        $escritorio = Container::getModel("Escritorio");
+        $escritorio = new Escritorio();
         $status = $escritorio->visualizarEscritorio($id);
         if($status['ok']) {
             echo json_encode(array('ok' => true, 'escritorio' => $status['data']));
@@ -67,7 +67,7 @@ class EscritoriosController {
         $cnpj = filter_input(INPUT_POST, 'cnpj');
         $observacoes = filter_input(INPUT_POST, 'observacoes');
 
-        $escritorio = Container::getModel("Escritorio");
+        $escritorio = new Escritorio();
         
         $status = $escritorio->editarEscritorio($id, $nome, $cnpj, $observacoes);
         if($status['ok']) {
@@ -82,7 +82,7 @@ class EscritoriosController {
         PermissionMiddleware::checkConditions(["id" => 1]);
 
         $id = filter_input(INPUT_POST, 'id');
-        $escritorio = Container::getModel("Escritorio");
+        $escritorio = new Escritorio();
         $status = $escritorio->excluirEscritorio($id);
         if($status['ok']) {
             echo json_encode(array('ok' => true, 'message' => "Escritório excluído com sucesso"));

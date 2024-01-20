@@ -47,7 +47,13 @@ class Caixa extends Model
         );
     }
 
-    
+    public function excluirCaixa($id)
+    {
+        return $this->delete(
+            "caixas",
+            "id = $id"
+        );
+    }
 
 }
 

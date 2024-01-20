@@ -159,6 +159,11 @@ class Route extends Bootstrap {
             'controller' => 'Pages/CaixasPages',
             'action' => 'listar'
         ]);
+        array_push($routes,[
+            'route' => '/caixas/visualizar',
+            'controller' => 'Pages/CaixasPages',
+            'action' => 'visualizar'
+        ]);
             // api
         array_push($routes, [
             'route' => '/api/caixas/listar',
@@ -169,6 +174,21 @@ class Route extends Bootstrap {
             'route' => '/api/caixas/criar',
             'controller' => 'CaixasController',
             'action' => 'abrirCaixa'
+        ]);
+        array_push($routes, [
+            'route' => '/api/caixas/visualizar',
+            'controller' => 'CaixasController',
+            'action' => 'visualizarCaixa'
+        ]);
+        array_push($routes, [
+            'route' => '/api/caixas/editar',
+            'controller' => 'CaixasController',
+            'action' => 'editarCaixa'
+        ]);
+        array_push($routes, [
+            'route' => '/api/caixas/excluir',
+            'controller' => 'CaixasController',
+            'action' => 'excluirCaixa'
         ]);
 
 
