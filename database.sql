@@ -21,6 +21,10 @@ CREATE TABLE IF NOT EXISTS `acoes_sistema` (
   CONSTRAINT `FK_acoes_sistema_controladores` FOREIGN KEY (`controlador`) REFERENCES `controladores` (`nome`) ON DELETE NO ACTION ON UPDATE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
+INSERT INTO `acoes_sistema` (`id`, `controlador`, `metodo`, `descricao`) VALUES
+	(1, 'CaixasController', 'abrirCaixa', 'Fazer a abertura de um novo caixa.'),
+	(2, 'CaixasController', 'listarCaixas', 'Pegar todos os caixas abertos no escritório do usu');
+
 CREATE TABLE IF NOT EXISTS `caixas` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `nome` varchar(50) NOT NULL,
@@ -39,11 +43,17 @@ CREATE TABLE IF NOT EXISTS `caixas` (
   CONSTRAINT `FK_caixas_usuarios_2` FOREIGN KEY (`id_usuario_fechamento`) REFERENCES `usuarios` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB AUTO_INCREMENT=26 DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
+INSERT INTO `caixas` (`id`, `nome`, `observacoes`, `id_escritorio`, `id_usuario_abertura`, `id_usuario_fechamento`, `data_abertura`, `data_fechamento`) VALUES
+	(25, 'Caixa principal', '', 2, 34, NULL, '2024-01-18 15:27:46', NULL);
+
 CREATE TABLE IF NOT EXISTS `controladores` (
   `nome` varchar(50) NOT NULL,
   `exibicao` varchar(50) DEFAULT NULL,
   UNIQUE KEY `nome` (`nome`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+
+INSERT INTO `controladores` (`nome`, `exibicao`) VALUES
+	('CaixasController', 'Caixas');
 
 CREATE TABLE IF NOT EXISTS `escritorios` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
@@ -53,6 +63,52 @@ CREATE TABLE IF NOT EXISTS `escritorios` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `cnpj` (`cnpj`)
 ) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+
+INSERT INTO `escritorios` (`id`, `nome`, `cnpj`, `observacoes`) VALUES
+	(1, '[ADMIN OFFICE]', '11111111111111', 'Escritório do admin master blaster'),
+	(2, 'CFC Jaguar', '09524929000194', 'Autoescola Jaguar de Uruaçu'),
+	(5, 'Jaguariúna', '22222222222222', '');
+
+CREATE TABLE IF NOT EXISTS `formas_pagamento` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `nome` varchar(50) NOT NULL,
+  `observacoes` varchar(255) NOT NULL,
+  `ativa` tinyint(1) NOT NULL DEFAULT 1,
+  `id_escritorio` int(11) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `FK_forma_pagamento_escritorios` (`id_escritorio`),
+  CONSTRAINT `FK_forma_pagamento_escritorios` FOREIGN KEY (`id_escritorio`) REFERENCES `escritorios` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+
+INSERT INTO `formas_pagamento` (`id`, `nome`, `observacoes`, `ativa`, `id_escritorio`) VALUES
+	(1, 'Dinheiro', 'Dinheiro em cédulas, que contam no valor a transportar do caixa (dinheiro físico para o fechamento)', 1, NULL),
+	(2, 'PIX', 'PIX', 1, NULL),
+	(3, 'Crédito', 'Cartão de crédito', 1, NULL),
+	(4, 'Débito', 'Cartão de débito', 1, NULL);
+
+CREATE TABLE IF NOT EXISTS `operacoes` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `nome` varchar(50) NOT NULL,
+  `observacoes` varchar(255) DEFAULT NULL,
+  `valor` float NOT NULL,
+  `id_caixa` int(11) NOT NULL,
+  `id_usuario` int(11) NOT NULL,
+  `data` date NOT NULL,
+  `data_criacao` datetime NOT NULL DEFAULT current_timestamp(),
+  `tipo_entrada` tinyint(1) NOT NULL,
+  `id_forma_pagamento` int(11) NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `FK__caixas` (`id_caixa`),
+  KEY `FK__usuarios` (`id_usuario`),
+  KEY `FK_operacao_forma_pagamento` (`id_forma_pagamento`),
+  CONSTRAINT `FK__caixas` FOREIGN KEY (`id_caixa`) REFERENCES `caixas` (`id`) ON DELETE NO ACTION,
+  CONSTRAINT `FK__usuarios` FOREIGN KEY (`id_usuario`) REFERENCES `usuarios` (`id`) ON DELETE NO ACTION,
+  CONSTRAINT `FK_operacao_forma_pagamento` FOREIGN KEY (`id_forma_pagamento`) REFERENCES `formas_pagamento` (`id`) ON DELETE NO ACTION
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+
+INSERT INTO `operacoes` (`id`, `nome`, `observacoes`, `valor`, `id_caixa`, `id_usuario`, `data`, `data_criacao`, `tipo_entrada`, `id_forma_pagamento`) VALUES
+	(7, 'Abastecimento moto', '', 30, 25, 34, '2024-01-19', '2024-01-21 18:02:07', 0, 1),
+	(8, 'Curso teórico', 'Zé da manga', 502, 25, 34, '2024-01-21', '2024-01-21 18:03:11', 1, 1);
 
 CREATE TABLE IF NOT EXISTS `permissoes` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
@@ -65,6 +121,9 @@ CREATE TABLE IF NOT EXISTS `permissoes` (
   CONSTRAINT `FK_permissoes_usuarios` FOREIGN KEY (`id_usuario`) REFERENCES `usuarios` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
+INSERT INTO `permissoes` (`id`, `id_usuario`, `acao`) VALUES
+	(2, 34, 'listarCaixas');
+
 CREATE TABLE IF NOT EXISTS `usuarios` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `nome` varchar(50) NOT NULL,
@@ -76,6 +135,11 @@ CREATE TABLE IF NOT EXISTS `usuarios` (
   KEY `FK_usuarios_escritorios_2` (`id_escritorio`),
   CONSTRAINT `FK_usuarios_escritorios_2` FOREIGN KEY (`id_escritorio`) REFERENCES `escritorios` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB AUTO_INCREMENT=35 DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+
+INSERT INTO `usuarios` (`id`, `nome`, `usuario`, `senha`, `id_escritorio`) VALUES
+	(1, 'ADMIN', 'admin', '$2y$10$XOzZr6CEkUicXO1koRCu2eHp7Xnw3YhzN3RSsNlgETaFUrUXN9GsO', 1),
+	(33, 'Thiago Serra', 'thiagoserra', '$2y$10$Nw6sFyVb/G4/eAYwlYFNReHIbROCVStLFItn5t.y5pL0qx.8xJmXC', 2),
+	(34, 'Arthur Rogado Reis', 'arthurrogado', '$2y$10$QAwHNHSDaSC5CUec5VagFOY309NHnF6slO8bBXHuLfqWAoRW/oTeG', 2);
 
 /*!40103 SET TIME_ZONE=IFNULL(@OLD_TIME_ZONE, 'system') */;
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;

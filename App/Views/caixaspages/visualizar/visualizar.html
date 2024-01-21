@@ -1,34 +1,156 @@
-<div class="card">
+<!DOCTYPE html>
+<html lang="pt-br">
 
-    <div class="title">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PontoCaixa</title>
+    <link rel="stylesheet" href="http://localhost:8080/frontend/App.css">
+    <link rel="stylesheet" href="http://localhost:8080/index.css">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    
+    <style>
+        #btn_entrada, #btn_saida {
+            cursor: pointer;
+
+        }
+    </style>
+
+</head>
+
+<div class="">
+
+    <div class="title w3-margin">
         <h1>Visualizar Caixa</h1>
     </div>
 
-    <div class="w3-row-padding w3-white">
+    <!-- Espaço informações -->
+    <div class="w3-row w3-round-large w3-white w3-hover-shadow w3-margin">
         
-        <div class="w3-half">
-            <div class="w3-padding w3-large">
-                <span>Nome:</span>
-                <span id="nome">[nome do caixa]</span>
+        <div class="w3-half w3-border-right">
+            <div class="w3-large">
+                <div class="w3-padding w3-border-bottom">
+                    <span>Nome:</span>
+                    <span id="nome_caixa">[nome do caixa]</span>
+                </div>
             </div>
 
-            <div class="w3-padding w3-gray">
+            <div class="w3-row">
+                    
                 <div class="w3-half w3-padding">
-                    <span class="w3-w100">Abertura:</span>
-                    <span id="data_abertura">01/01/2000</span>
+                    <div class="w3-margin-bottom">
+                        <div>Data Abertura:</div>
+                        <span id="data_abertura">01/01/2000</span>
+                    </div>
+                    <div class="w3-small ">
+                        <div>Quem abriu:</div>
+                        <span id="quem_abriu">[quem abriu]</span>
+                    </div>
+                </div class="w3-padding">
+
+                <div class="w3-half w3-padding">
+                    <div class="w3-margin-bottom">
+                        <div class="">Data Fechamento:</div>
+                        <span id="data_fechamento">01/01/2000</span>
+                    </div>
+                    <div class="w3-small ">
+                        <div>Quem fechou:</div>
+                        <span id="quem_fechou">[quem fechou]</span>
+                    </div>
                 </div>
-                <div class="w3-half w3-padding">
-                    <span>Fechamento:</span>
-                    <span id="data_fechamento">01/01/2000</span>
+                
+            </div>
+
+        </div>
+
+        <!-- Observações -->
+        <div class="w3-half">
+            <div class="">
+                <div class="w3-padding w3-large">Observações:</div>
+                <div class="w3-border-top w3-padding" id="observacoes">
+                    Lorem ipsum dolor sit amet, consectetur adipisicing elit. Excepturi eveniet maiores saepe quidem illo perspiciatis repellendus itaque, odio assumenda? Perspiciatis laudantium nobis velit facilis quidem vitae, delectus dolor ducimus aut.
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <!-- Fim espaço informações -->
+
+
+
+    <!-- Valores e últimos lançamentos -->
+    <div class="w3-row">
+
+        <!-- Botões e detalhamento -->
+        <div class="w3-third">
+
+            <!-- Botão entrada -->
+            <div class="w3-blue w3-hover-shadow w3-padding w3-margin w3-round-large" id="btn_entrada">
+                <div class="">
+                    <span class="w3-large">Entradas:</span>
+                    <span class="w3-right w3-xxlarge">+</span>
+                </div>
+                <div>
+                    <span>R$</span>
+                    <h1 id="soma_entradas" class="w3-show-inline-block">
+                        <div class="loading"></div>
+                    </h1>
+                </div>
+            </div>
+
+            <!-- Botão saída -->
+            <div class="w3-red w3-hover-shadow w3-padding w3-margin w3-round-large" id="btn_saida">
+                <div class="">
+                    <span class="w3-large">Saídas:</span>
+                    <span class="w3-right w3-xxlarge">-</span>
+                </div>
+                <div>
+                    <span>R$</span>
+                    <h1 id="soma_saidas" class="w3-show-inline-block">
+                        <div class="loading"></div>
+                    </h1>
+                </div>
+            </div>
+
+            <!-- Card detalhamento -->
+            <div class="w3-light-grey w3-hover-shadow w3-padding w3-margin w3-round-large">
+                <div>
+                    <span>Dinheiro:</span>
+                    <span id="dinheiro" class="w3-right">R$ 0,00</span>
+                </div>
+                <div>
+                    <span>PIX:</span>
+                    <span id="pix" class="w3-right">R$ 0,00</span>
+                </div>
+                <div>
+                    <span>Crédito:</span>
+                    <span id="credito" class="w3-right">R$ 0,00</span>
+                </div>
+                <div>
+                    <span>Débito:</span>
+                    <span id="debito" class="w3-right">R$ 0,00</span>
+                </div>
+                <div>
+                    <span>Outros:</span>
+                    <span id="outros" class="w3-right">R$ 0,00</span>
                 </div>
             </div>
 
         </div>
 
-        <div class="w3-half">
-            <div class="w3-padding">
-                <span class="w3-large"></span>
+        <div class="w3-twothird">
+
+            <div class="w3-margin w3-grey w3-round-large">
+                <div class="w3-black w3-round-large w3-padding-small">
+                    OPERAÇÕES
+                </div>
+                <div class="w3-padding-small" id="operacoes">
+                    <div class="loading"></div>
+                </div>
             </div>
+
         </div>
 
     </div>

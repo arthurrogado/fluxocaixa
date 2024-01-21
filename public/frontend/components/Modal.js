@@ -2,12 +2,13 @@ import _Component from "./_component.js";
 
 class Modal extends _Component {
 
-    constructor(parent, title, content, buttons = []) {
+    constructor(parent, title, content, buttons = [], warn_on_close = false) {
         super(parent);
 
         this.title = title;
         this.content = content;
         this.buttons = buttons;
+        this.warn_on_close = warn_on_close;
 
         this.element = document.createElement('div');
         this.element.classList.add('modal');
@@ -151,8 +152,15 @@ class Modal extends _Component {
         this.element.append(box);
         this.render();
 
+        // document.addEventListener('input', (e) => {
+        //     this.warn_on_close = true;
+        // })
+
         // Fechar modal com ESC
         document.addEventListener('keydown', (event) => {
+            if(this.warn_on_close) {
+                if(!confirm('Deseja fechar o modal?')) return;
+            }
             if (event.key == 'Escape') {
                 this.fecharTodosModais();
             }
@@ -160,6 +168,11 @@ class Modal extends _Component {
 
         // Fechar modal clicando fora (no elemento modal)
         this.element.addEventListener('click', (event) => {
+            // Confirmar se quer fechar
+            if(this.warn_on_close){
+                if(!confirm('Deseja fechar o modal?')) return;
+            }
+
             if (event.target == this.element) {
                 this.element.remove();
             }

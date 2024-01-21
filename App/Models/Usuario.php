@@ -3,6 +3,8 @@
 namespace App\Models;
 use MF\Model\Model;
 
+use function PHPSTORM_META\type;
+
 class Usuario extends Model
 {
     
@@ -30,11 +32,13 @@ class Usuario extends Model
 
     public function visualizarUsuario($id)
     {
-        return $this->selectOne(
+        $status = $this->selectOne(
             "usuarios",
             ["*"],
             "id = $id"
         );
+        if($status['data']) unset($status['data']->senha);
+        return $status;
     }
         
     public function editarUsuario($id, $nome, $usuario, $cnpj_escritorio)

@@ -192,6 +192,21 @@ class Route extends Bootstrap {
         ]);
 
 
+        // OPERAÇÕES
+            // pages
+            // api
+        array_push($routes, [
+            'route' => '/api/operacoes/caixa',
+            'controller' => 'OperacoesController',
+            'action' => 'getOperacoesCaixa'
+        ]);
+        array_push($routes, [
+            'route' => '/api/operacoes/criar',
+            'controller' => 'OperacoesController',
+            'action' => 'criarOperacao'
+        ]);
+
+
         $this->setRoutes($routes);
     }
 

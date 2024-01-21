@@ -48,19 +48,21 @@ class Operacao {
     - id: int
     - nome: string
     - observacoes: string
+    - valor: float
     - id_caixa: int
     - id_usuario: int
     - data: date
-    - data_criacao: date
-    - valor: float
+    - data_criacao: datetime
     - tipo: string
-    - forma_pagamento: string
+    - id_forma_pagamento: int
 }
 
 class FormaPagamento {
     - id: int
     - nome: string
     - observacoes: string
+    - ativa: boolean
+    - id_escritorio: int
 }
 
 permissoes "1" -- "0..*" acoes_sistema: Possui
@@ -71,5 +73,7 @@ Usuario "1" -- "0..*" Operacao: Realiza
 
 Escritorio "1" -- "0..*" Caixa: Possui
 Caixa "1" -- "0..*" Operacao: Possui
+
+Operacao "0..*" - "1" FormaPagamento: Possui
 
 @enduml

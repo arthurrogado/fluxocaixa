@@ -3,6 +3,7 @@
 namespace App\Controllers;
 use App\Middlewares\PermissionMiddleware;
 use App\Models\Caixa;
+use App\Models\Operacao;
 use App\Models\Usuario;
 
 class CaixasController
@@ -59,15 +60,27 @@ class CaixasController
         // PermissionMiddleware::checkPermissions('visualizarCaixa');
 
         $id = filter_input(INPUT_POST, 'id');
-
-        // $caixa = Container::getModel('Caixa');
         $caixa = new Caixa();
-        $status = $caixa->visualizarCaixa($id);
-        if($status['ok']) {
-            echo json_encode(array('ok' => true, 'caixa' => $status['data']));
-        } else {
-            echo json_encode(array('ok' => false, 'message' => "Erro: " . $status['message'] ));
-        }
+
+        $sql = "SELECT 
+            c.*, 
+            ua.nome AS nome_usuario_abertura,
+            uf.nome AS nome_usuario_fechamento
+            FROM caixas AS c
+        JOIN usuarios AS ua
+            ON ua.id = c.id_usuario_abertura
+        LEFT JOIN usuarios AS uf
+            ON uf.id = c.id_usuario_fechamento
+        WHERE c.id = :id
+        ";
+
+        $conn = Caixa::getConn();
+        $stmt = $conn->prepare($sql);
+        $stmt->bindValue(":id", $id);
+        $stmt->execute();        
+        $caixa = $stmt->fetch(\PDO::FETCH_OBJ);
+
+        echo json_encode(array('ok' => true, 'caixa' => $caixa));
         
     }
     
