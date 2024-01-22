@@ -13,6 +13,9 @@ class Modal extends _Component {
         this.element = document.createElement('div');
         this.element.classList.add('modal');
 
+        // Gerar zindex baseado no timestamp
+        this.zIndex = new Date().getTime();
+
         this.css = `
             .modal {
                 position: absolute;
@@ -24,6 +27,7 @@ class Modal extends _Component {
                 display: flex;
                 justify-content: center;
                 align-items: center;
+                z-index: ${this.zIndex};
             }
 
             .modal .box {
@@ -134,7 +138,7 @@ class Modal extends _Component {
         this.buttons.forEach(btn => {
             let button = document.createElement('button');
             button.classList.add('btn', btn.class ?? 'btn-primary');
-            button.textContent = btn.text;
+            button.innerHTML = btn.text;
             button.addEventListener('click', () => {
                 if (btn.action) {
                     btn.action() 

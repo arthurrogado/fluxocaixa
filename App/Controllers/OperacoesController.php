@@ -69,6 +69,44 @@ class OperacoesController
 
     }
 
+    public function editarOperacao()
+    {
+        // Permissões: 
+        // - Usuário deve ter permissão para editar operação
+        PermissionMiddleware::checkPermissions('editarOperacao');
+
+        $id = $this->getPost('id');
+        $nome = $this->getPost('nome');
+        $observacoes = $this->getPost('observacoes');
+        $valor = $this->getPost('valor');
+        $id_forma_pagamento = $this->getPost('id_forma_pagamento');
+
+        $operacao = new Operacao();
+        $status = $operacao->editarOperacao($id, $nome, $observacoes, $valor, $id_forma_pagamento);
+        if($status['ok']) {
+            echo json_encode(array('ok' => true, 'message' => "Operação editada com sucesso"));
+        } else {
+            echo json_encode(array('ok' => false, 'message' => "Erro: " . $status['message'] ));
+        }
+    }
+
+    public function excluirOperacao()
+    {
+        // Permissões: 
+        // - Usuário deve ter permissão para excluir operação
+        PermissionMiddleware::checkPermissions('excluirOperacao');
+
+        $id = $this->getPost('id');
+
+        $operacao = new Operacao();
+        $status = $operacao->excluirOperacao($id);
+        if($status['ok']) {
+            echo json_encode(array('ok' => true, 'message' => "Operação excluída com sucesso"));
+        } else {
+            echo json_encode(array('ok' => false, 'message' => "Erro: " . $status['message'] ));
+        }
+    }
+
 }
 
 ?>

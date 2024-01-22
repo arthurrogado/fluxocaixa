@@ -205,6 +205,16 @@ class Route extends Bootstrap {
             'controller' => 'OperacoesController',
             'action' => 'criarOperacao'
         ]);
+        array_push($routes, [
+            'route' => '/api/operacoes/excluir',
+            'controller' => 'OperacoesController',
+            'action' => 'excluirOperacao'
+        ]);
+        array_push($routes, [
+            'route' => '/api/operacoes/editar',
+            'controller' => 'OperacoesController',
+            'action' => 'editarOperacao'
+        ]);
 
 
         $this->setRoutes($routes);
