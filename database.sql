@@ -41,10 +41,11 @@ CREATE TABLE IF NOT EXISTS `caixas` (
   CONSTRAINT `FK_caixas_escritorios` FOREIGN KEY (`id_escritorio`) REFERENCES `escritorios` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `FK_caixas_usuarios` FOREIGN KEY (`id_usuario_abertura`) REFERENCES `usuarios` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `FK_caixas_usuarios_2` FOREIGN KEY (`id_usuario_fechamento`) REFERENCES `usuarios` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=26 DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=27 DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
 INSERT INTO `caixas` (`id`, `nome`, `observacoes`, `id_escritorio`, `id_usuario_abertura`, `id_usuario_fechamento`, `data_abertura`, `data_fechamento`) VALUES
-	(25, 'Caixa principal', '', 2, 34, NULL, '2024-01-18 15:27:46', NULL);
+	(25, 'Caixa principal', '', 2, 34, NULL, '2024-01-18 15:27:46', NULL),
+	(26, 'Juju ', '', 2, 34, NULL, '2024-01-21 19:51:08', NULL);
 
 CREATE TABLE IF NOT EXISTS `controladores` (
   `nome` varchar(50) NOT NULL,
@@ -97,6 +98,7 @@ CREATE TABLE IF NOT EXISTS `operacoes` (
   `data_criacao` datetime NOT NULL DEFAULT current_timestamp(),
   `tipo_entrada` tinyint(1) NOT NULL,
   `id_forma_pagamento` int(11) NOT NULL,
+  `excluido` enum('1','0') NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
   KEY `FK__caixas` (`id_caixa`),
   KEY `FK__usuarios` (`id_usuario`),
@@ -104,11 +106,18 @@ CREATE TABLE IF NOT EXISTS `operacoes` (
   CONSTRAINT `FK__caixas` FOREIGN KEY (`id_caixa`) REFERENCES `caixas` (`id`) ON DELETE NO ACTION,
   CONSTRAINT `FK__usuarios` FOREIGN KEY (`id_usuario`) REFERENCES `usuarios` (`id`) ON DELETE NO ACTION,
   CONSTRAINT `FK_operacao_forma_pagamento` FOREIGN KEY (`id_forma_pagamento`) REFERENCES `formas_pagamento` (`id`) ON DELETE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
-INSERT INTO `operacoes` (`id`, `nome`, `observacoes`, `valor`, `id_caixa`, `id_usuario`, `data`, `data_criacao`, `tipo_entrada`, `id_forma_pagamento`) VALUES
-	(7, 'Abastecimento moto', '', 30, 25, 34, '2024-01-19', '2024-01-21 18:02:07', 0, 1),
-	(8, 'Curso teórico', 'Zé da manga', 502, 25, 34, '2024-01-21', '2024-01-21 18:03:11', 1, 1);
+INSERT INTO `operacoes` (`id`, `nome`, `observacoes`, `valor`, `id_caixa`, `id_usuario`, `data`, `data_criacao`, `tipo_entrada`, `id_forma_pagamento`, `excluido`) VALUES
+	(7, 'Abastecimento moto', '', 30, 25, 34, '2024-01-19', '2024-01-21 18:02:07', 0, 1, '0'),
+	(8, 'Curso teórico', 'Zé da manga', 502, 25, 34, '2024-01-21', '2024-01-21 18:03:11', 1, 1, '0'),
+	(9, 'Tutu', 'Jujurrr', 100000, 26, 34, '2024-01-19', '2024-01-21 19:52:06', 1, 1, '0'),
+	(10, 'asdf', '', 12, 26, 34, '2024-01-21', '2024-01-21 19:52:17', 0, 1, '0'),
+	(11, 'Teste', '', 123, 25, 34, '2024-01-19', '2024-01-21 23:49:50', 1, 1, '1'),
+	(12, 'Apenas um teste levemente mais grande (kkkk maior ', 'Bem, acho que posso escrever algo mais aqui né? Vamos tentar então. Sou Jake Peralta e sou um detetive da polícia de Nova York. Você precisa que eu resolva um caso? Então é só me chamar, estou no canal Netflix hehe :D', 10, 25, 34, '2024-01-22', '2024-01-22 00:17:41', 1, 1, '0'),
+	(13, 'opa kk', '', 5, 25, 34, '2024-01-22', '2024-01-22 00:53:02', 1, 1, '1'),
+	(14, 'Teste apenas', '', 12, 25, 34, '2024-01-22', '2024-01-22 00:59:34', 0, 1, '0'),
+	(15, 'asd', '', 1, 25, 34, '2024-01-22', '2024-01-22 01:00:01', 0, 1, '1');
 
 CREATE TABLE IF NOT EXISTS `permissoes` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
