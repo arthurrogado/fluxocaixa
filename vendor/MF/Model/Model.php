@@ -97,6 +97,24 @@ abstract class Model {
         }
     }
 
+    public function executeSelect(string $query, array $params = null) : array {
+        try {
+            // self::getConn();
+            $stmt = self::$conn->prepare($query);
+            if($params){
+                foreach ($params as $key => $value) {
+                    $stmt->bindValue($key, $value);
+                }
+            }
+            $stmt->execute();
+            $result = $stmt->fetchAll(\PDO::FETCH_OBJ);
+            return ["ok" => true, "data" => $result];
+        } catch (\Throwable $th) {
+            //throw $th;
+            return ["ok" => false, "message" => $th->getMessage(), "line" => $th->getLine()];
+        }
+    }
+
     public function update(string $table, array $columns, array $values, string $where){
         // Example: update("users", ["name", "email"], ["Durov", "durov@telegram"], "id = 1");
         try {

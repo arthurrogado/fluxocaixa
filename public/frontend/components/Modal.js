@@ -2,20 +2,19 @@ import _Component from "./_component.js";
 
 class Modal extends _Component {
 
-    constructor(parent, title, content, buttons = [], warn_on_close = false) {
+    constructor(parent, title, content, buttons = [], restrict_close = false) {
         super(parent);
 
         this.title = title;
         this.content = content;
         this.buttons = buttons;
-        this.warn_on_close = warn_on_close;
+        this.restrict_close = restrict_close;
 
         this.element = document.createElement('div');
         this.element.classList.add('modal');
 
         // Gerar zindex baseado no timestamp
         this.zIndex = new Date().getTime();
-
         this.css = `
             .modal {
                 position: absolute;
@@ -109,8 +108,11 @@ class Modal extends _Component {
         h3.innerHTML = this.title;
 
         let button = document.createElement('button');
-        button.textContent = 'X';
+        button.innerHTML = /*html*/`<i class="fa fa-times"></i>`;
         button.addEventListener('click', () => {
+            if(this.restrict_close) {
+                if(!confirm('Deseja fechar o modal?')) return;
+            }
             this.element.remove();
         });
 
@@ -157,28 +159,25 @@ class Modal extends _Component {
         this.render();
 
         // document.addEventListener('input', (e) => {
-        //     this.warn_on_close = true;
+        //     this.restrict_close = true;
         // })
 
         // Fechar modal com ESC
         document.addEventListener('keydown', (event) => {
-            if(this.warn_on_close) {
-                if(!confirm('Deseja fechar o modal?')) return;
-            }
             if (event.key == 'Escape') {
-                this.fecharTodosModais();
+                if(this.restrict_close) {
+                    if(confirm("Deseja fechar essa caixa?")) this.close();
+                }
             }
+            this.restrict_close = true;
         });
 
         // Fechar modal clicando fora (no elemento modal)
         this.element.addEventListener('click', (event) => {
             // Confirmar se quer fechar
-            if(this.warn_on_close){
-                if(!confirm('Deseja fechar o modal?')) return;
-            }
-
-            if (event.target == this.element) {
-                this.element.remove();
+            if(this.restrict_close) {
+                // if(confirm("Deseja fechar essa caixa?")) this.close();
+                return;
             }
         });
 

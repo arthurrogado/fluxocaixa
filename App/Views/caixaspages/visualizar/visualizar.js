@@ -1,6 +1,6 @@
 import HttpClient from "/frontend/App.js";
+import infoBox from "/frontend/components/InfoBox.js";
 import Modal from "/frontend/components/Modal.js";
-import Table from "/frontend/components/Table.js";
 
 class VisualizarCaixa {
     constructor() {
@@ -8,11 +8,12 @@ class VisualizarCaixa {
         this.init();
     }
 
-    init() {
+    async init() {
         this.obterDadosCaixa();
         this.obterOperacoes();
         document.querySelector('#btn_entrada').addEventListener('click', () => this.abrirModalCriarOperacao('entrada'));
         document.querySelector('#btn_saida').addEventListener('click', () => this.abrirModalCriarOperacao('saida'));
+        this.carteiras = await this.obterCarteiras();
     }
 
     obterDadosCaixa() {
@@ -28,13 +29,70 @@ class VisualizarCaixa {
     obterOperacoes() {
         this.httpClient.makeRequest('/api/operacoes/caixa', {id_caixa: this.httpClient.getParams().id})
         .then(response => {
-            console.log(response)
             if(response.ok) {
-                this.preencherOperacoes(response.operacoes)
-                document.querySelector('#soma_entradas').innerHTML = this.formatarValor(response.soma_entradas);
-                document.querySelector('#soma_saidas').innerHTML = this.formatarValor(response.soma_saidas);
+                let operacoes = response.operacoes;
+                let soma_dinheiro = 0 // 1
+                let soma_pix = 0 // 2
+                let soma_credito = 0 // 3
+                let soma_debito = 0 // 4
+                let soma_outros = 0
+                operacoes.forEach(operacao => {
+                    let indice = operacao.tipo == 'e' ? 1 : -1; // Somar ou subtrair do total
+                    if(operacao.id_carteira == 1) {
+                        soma_dinheiro += operacao.valor * indice;
+                    } else if(operacao.id_carteira == 2) {
+                        soma_pix += operacao.valor * indice;
+                    } else if(operacao.id_carteira == 3) {
+                        soma_credito += operacao.valor * indice;
+                    } else if(operacao.id_carteira == 4) {
+                        soma_debito += operacao.valor * indice;
+                    } else {
+                        soma_outros += operacao.valor * indice;
+                    }
+                });
+                let substituir_detalhamento = {
+                    "#soma_dinheiro": soma_dinheiro,
+                    "#soma_pix": soma_pix,
+                    "#soma_credito": soma_credito,
+                    "#soma_debito": soma_debito,
+                    "#soma_outros": soma_outros,
+                    "#soma_entradas": response.soma_entradas,
+                    "#soma_saidas": response.soma_saidas,
+                }
+                for(let campo in substituir_detalhamento) {
+                    document.querySelector(campo).innerHTML = this.formatarValor(substituir_detalhamento[campo]);
+                }
+
+                this.preencherTabelaOperacoes(response.operacoes)
             }
         })
+    }
+
+    preencherTabelaOperacoes(operacoes) {
+        // Criar tabela
+        document.querySelector('#operacoes').innerHTML = '';
+        let table = document.createElement('table');
+        table.classList.add('w3-table-all', 'w3-hoverable');
+        let tableBody = document.createElement('tbody');
+        operacoes.forEach(operacao => {
+            operacao.icone = operacao.tipo == 'e' ? `
+                <i class="fa fa-arrow-up w3-text-blue"></i>
+            ` : `
+                <i class="fa fa-arrow-down w3-text-red"></i>
+            `;
+            let row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${operacao.icone}</td>
+                <td style="width:100%;">${operacao.nome}</td>
+                <td style="text-wrap:nowrap;">R$ ${this.formatarValor(operacao.valor)}</td>
+            `
+            row.addEventListener('click', () => this.abrirDetalhesOperacao(operacao))
+            tableBody.appendChild(row);
+        });
+        table.appendChild(tableBody);
+        document.querySelector('#operacoes').appendChild(table);
+        // Preencher detalhamento
+        console.log(operacoes)
     }
 
     formatarData(data) {
@@ -62,31 +120,19 @@ class VisualizarCaixa {
         }
     }
 
-    preencherOperacoes(operacoes) {
-        document.querySelector('#operacoes').innerHTML = '';
-        let table = document.createElement('table');
-        table.classList.add('w3-table-all', 'w3-hoverable');
-        let tableBody = document.createElement('tbody');
-        operacoes.forEach(operacao => {
-            operacao.tipo = operacao.tipo_entrada == 1 ? `
-                <i class="fa fa-arrow-up w3-text-blue"></i>
-            ` : `
-                <i class="fa fa-arrow-down w3-text-red"></i>
-            `;
-            let row = document.createElement('tr');
-            row.innerHTML = `
-                <td>${operacao.tipo}</td>
-                <td style="width:100%;">${operacao.nome}</td>
-                <td style="text-wrap:nowrap;">R$ ${this.formatarValor(operacao.valor)}</td>
-            `
-            row.addEventListener('click', () => this.abrirDetalhesOperacao(operacao))
-            tableBody.appendChild(row);
-        });
-        table.appendChild(tableBody);
-        document.querySelector('#operacoes').appendChild(table);
+    async obterCarteiras() {
+        // Pegar as carteiras disponíveis (do escritório e do sistema)
+        let carteiras = [];
+        let response = await this.httpClient.makeRequest('/api/carteiras/obter_de_caixa', {id_caixa: this.httpClient.getParams().id})
+        if(response.ok) {
+            carteiras = response.carteiras;
+        } else {
+            new infoBox('Erro ao obter carteiras', 'danger', 3)
+        }
+        return carteiras;
     }
 
-    abrirModalCriarOperacao(entrada='entrada') {
+    async abrirModalCriarOperacao(entrada='entrada') {
         let hoje = new Date();
         // Formatar para o formato do input
         hoje = hoje.toISOString().split('T')[0];
@@ -110,10 +156,14 @@ class VisualizarCaixa {
                     <label>Data:</label>
                 </div>
                 <div class="input-field">
-                    <select name="id_forma_pagamento">
-                        <option value="1">Dinheiro</option>
+                    <select name="id_carteira">
+                        <option value=""></option>
+                        ${this.carteiras.map(carteira => /*html*/`
+                            <option value="${carteira.id}">${carteira.nome}</option>
+                        `)}
+                        <!-- <option value="1">Dinheiro</option> -->
                     </select>
-                    <label>Forma de pagamento:</label>
+                    <label>Carteira:</label>
                 </div>
             </form>
         `;
@@ -125,7 +175,7 @@ class VisualizarCaixa {
                 action: () => {
                     let formdata = new FormData(document.querySelector('#form_operacao'));
                     formdata.append('id_caixa', this.httpClient.getParams().id);
-                    formdata.append('tipo_entrada', entrada=='entrada' ? 1 : 0);
+                    formdata.append('tipo', entrada=='entrada' ? 'e' : 's');
 
                     this.httpClient.makeRequest('/api/operacoes/criar', formdata)
                     .then(response => {
@@ -147,6 +197,7 @@ class VisualizarCaixa {
             `,
             conteudoModal,
             botoesModal
+            // true // true = não fechar ao clicar fora
         )
     }
 
@@ -191,6 +242,7 @@ class VisualizarCaixa {
 
     // DETALHES
     abrirDetalhesOperacao(operacao) {
+        let nome_carteira = this.carteiras.find(carteira => carteira.id == operacao.id_carteira).nome;
         let conteudoModal = /*html*/`
             <div class="w3-container">
                 <p class="w3-large">
@@ -206,7 +258,7 @@ class VisualizarCaixa {
                     <b>Data:</b> ${this.formatarData(operacao.data)}
                 </p>
                 <p>
-                    <b>Forma de pagamento:</b> Dinheiro
+                    <b>Forma de pagamento:</b> ${nome_carteira}
                 </p>
             </div>
         `;
@@ -241,7 +293,7 @@ class VisualizarCaixa {
         )
     }
 
-    abrirEdicaoOperacao(operacao) {
+    async abrirEdicaoOperacao(operacao) {
         let conteudoModal = /*html*/`
             <form id="form_operacao" class="w3-container">
                 <div class="input-field">
@@ -261,10 +313,13 @@ class VisualizarCaixa {
                     <label>Data:</label>
                 </div>
                 <div class="input-field">
-                    <select name="id_forma_pagamento" required>
-                        <option value="1">Dinheiro</option>
+                    <select name="id_carteira" required>
+                        <option value=""></option>
+                        ${this.carteiras.map(carteira => /*html*/`
+                            <option value="${carteira.id}" ${carteira.id == operacao.id_carteira ? 'selected' : ''}>${carteira.nome}</option>
+                        `)}
                     </select>
-                    <label>Forma de pagamento:</label>
+                    <label>Carteira:</label>
                 </div>
             </form>
             <div class="w3-small w3-margin-left">

@@ -28,6 +28,11 @@ class infoBox {
         // Define a hash to be used as a class name.
         // This is to avoid conflicts with other elements.
         let hash = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+        let zindex = new Date().getTime()*99;
+        let area_infos = document.querySelector('.area-infos')
+        if(area_infos) {
+            area_infos.style.zIndex = zindex;
+        }
 
         style.textContent = `
             * {
@@ -53,7 +58,7 @@ class infoBox {
             }
 
             .infoBox${hash} {
-                z-index: 9999;
+                z-index: ${zindex};
                 width: 300px;
                 background-color: var(--${theme});
                 padding: 15px;
@@ -110,7 +115,7 @@ class infoBox {
                 flex-direction: column;
                 align-items: flex-start;
                 justify-content: flex-end;
-                z-index: 9999;
+                z-index: ${zindex};
             }
 
         `;

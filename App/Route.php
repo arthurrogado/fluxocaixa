@@ -216,6 +216,18 @@ class Route extends Bootstrap {
             'action' => 'editarOperacao'
         ]);
 
+        // CARTEIRAS
+            // api
+        array_push($routes, [
+            'route' => '/api/carteiras/obter_de_escritorio',
+            'controller' => 'CarteirasController',
+            'action' => 'getCarteirasDeEscritorio'
+        ]);
+        array_push($routes, [
+            'route' => '/api/carteiras/obter_de_caixa',
+            'controller' => 'CarteirasController',
+            'action' => 'getCarteirasDeCaixa'
+        ]);
 
         $this->setRoutes($routes);
     }

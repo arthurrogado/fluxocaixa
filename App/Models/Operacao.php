@@ -6,15 +6,15 @@ use MF\Model\Model;
 class Operacao extends Model
 {
 
-    public function criarOperacao($nome, $observacoes, $valor, $id_caixa, $id_usuario, $data, $tipo_entrada, $id_forma_pagamento)
+    public function criarOperacao($nome, $observacoes, $valor, $id_caixa, $id_usuario, $data, $tipo, $id_carteira)
     {
         return $this->insert(
             "operacoes",
             [
-                "nome", "observacoes", "valor", "id_caixa", "id_usuario", "data", "tipo_entrada", "id_forma_pagamento"
+                "nome", "observacoes", "valor", "id_caixa", "id_usuario", "data", "tipo", "id_carteira"
             ],
             [
-                $nome, $observacoes, $valor, $id_caixa, $id_usuario, $data, $tipo_entrada, $id_forma_pagamento
+                $nome, $observacoes, $valor, $id_caixa, $id_usuario, $data, $tipo, $id_carteira
             ]
         );
     
@@ -30,12 +30,12 @@ class Operacao extends Model
         );
     }
 
-    public function editarOperacao($id, $nome, $observacoes, $valor, $id_forma_pagamento)
+    public function editarOperacao($id, $nome, $valor, $observacoes, $data, $id_carteira)
     {
         return $this->update(
             "operacoes",
-            ["nome", "observacoes", "valor", "id_forma_pagamento"],
-            [$nome, $observacoes, $valor, $id_forma_pagamento],
+            ["nome", "valor", "observacoes", "data", "id_carteira"],
+            [$nome, $valor, $observacoes, $data, $id_carteira],
             "id = $id"
         );
     }
@@ -46,6 +46,15 @@ class Operacao extends Model
             "operacoes",
             ["*"],
             "id_caixa = $id_caixa AND excluido='0' ORDER BY data DESC, data_criacao DESC"
+        );
+    }
+
+    public function getOperacao($id)
+    {
+        return $this->selectOne(
+            "operacoes",
+            ["*"],
+            "id = $id"
         );
     }
 

@@ -180,6 +180,8 @@ class HttpClient {
                         new this.Info(response.message, 'success', 3000)
                     } else {
                         new this.Info(response.message, 'danger', 3000)
+                        console.log('response: ')
+                        console.log(response)
                     }
                 }
 
