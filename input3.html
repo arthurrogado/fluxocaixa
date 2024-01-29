@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="https://unpkg.com/imask"></script>
+
+</head>
+<body>
+
+<input type="text" id="valor">
+
+<script>
+    var campo = document.getElementById('valor');
+    var mascara = IMask(campo, {
+        mask: Number,
+        scale: 2,
+        thousandsSeparator: '.',
+        radix: ',',
+        masToRadix: ['.', ','],
+    })
+
+</script>
+    
+</body>
+</html>

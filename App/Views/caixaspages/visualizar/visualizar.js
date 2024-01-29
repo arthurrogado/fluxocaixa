@@ -13,6 +13,7 @@ class VisualizarCaixa {
         this.obterOperacoes();
         document.querySelector('#btn_entrada').addEventListener('click', () => this.abrirModalCriarOperacao('entrada'));
         document.querySelector('#btn_saida').addEventListener('click', () => this.abrirModalCriarOperacao('saida'));
+        document.querySelector("#btn_editar_caixa").addEventListener('click', () => this.abrirEdicaoCaixa());
         this.carteiras = await this.obterCarteiras();
     }
 
@@ -197,7 +198,6 @@ class VisualizarCaixa {
             `,
             conteudoModal,
             botoesModal
-            // true // true = não fechar ao clicar fora
         )
     }
 
@@ -355,6 +355,45 @@ class VisualizarCaixa {
             `,
             conteudoModal,
             botoesModal
+        )
+    }
+
+    async abrirEdicaoCaixa() {
+        let response = await this.httpClient.makeRequest('/api/caixas/visualizar', {id: this.httpClient.getParams().id})
+        if(!response.ok) return;
+
+        let modal_editar_caixa = new Modal(
+            "body", "Editar caixa",
+            /*html*/`
+                <form id="form_editar_caixa">
+                    <div class="input-field">
+                        <input type="text" name="nome" value="${response.caixa.nome}" max=50 required>
+                        <label>Nome:</label>
+                    </div>
+                    <div class="input-field">
+                        <textarea name="observacoes" maxlength=500 rows=10>${response.caixa.observacoes}</textarea>
+                        <label>Observações:</label>
+                    </div>
+                </form>
+            `,
+            [
+                {
+                    text: "<i class='fa fa-save'></i> Salvar",
+                    class: "w3-teal",
+                    action: () => {
+                        let formdata = new FormData(document.querySelector('#form_editar_caixa'));
+                        formdata.append('id', this.httpClient.getParams().id);
+
+                        this.httpClient.makeRequest('/api/caixas/editar', formdata)
+                        .then(response => {
+                            if(response.ok) {
+                                this.obterDadosCaixa();
+                                modal_editar_caixa.close();
+                            }
+                        })
+                    }
+                }
+            ]
         )
     }
 

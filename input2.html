@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Evitar Abertura de Select</title>
+    <script src="https://unpkg.com/cleave-zen@0.0.17/dist/cleave-zen.umd.js"></script>
+    <script src="https://unpkg.com/cleave-zen"></script>
+    
+</head>
+
+<body>
+
+    <input class="valor" type="text" />
+
+    <script type="module">
+        window.cleaveZen.DefaultNumeralDelimiter = '.'
+        
+        let formatGeneral = window.cleaveZen.formatGeneral
+        let formatNumeral = window.cleaveZen.formatNumeral
+
+        const valorInput = document.querySelector('.valor')
+
+        valorInput.addEventListener('input', e => {
+            const value = e.target.value
+            valorInput.value = formatGeneral(value, {
+                numeral: true,
+                numeralThousandsGroupStyle: 'thousand'
+            })
+        })
+    </script>
+
+</body>
+
+</html>

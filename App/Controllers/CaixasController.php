@@ -33,6 +33,36 @@ class CaixasController
         }
 
     }
+
+    public function editarCaixa()
+    {
+        // Permissões: 
+        // - Usuário deve ter permissão para editar caixa
+        PermissionMiddleware::checkPermissions('editarCaixa');
+
+        $id = filter_input(INPUT_POST, 'id');
+
+        $class_caixa = new Caixa();
+        $status = $class_caixa->visualizarCaixa($id);
+        if(!$status['ok']) {
+            echo json_encode(array('ok' => false, 'message' => "Erro: " . $status['message'] ));
+            exit;
+        }
+        $caixa = $status['data'];
+        
+        PermissionMiddleware::checkConditions(["id_escritorio" => $caixa->id_escritorio]);
+
+        $nome = filter_input(INPUT_POST, 'nome');
+        $observacoes = filter_input(INPUT_POST, 'observacoes');
+
+        $caixa = new Caixa();
+        $status = $caixa->editarCaixa($id, $nome, $observacoes);
+        if($status['ok']) {
+            echo json_encode(array('ok' => true, 'message' => "Caixa editado com sucesso"));
+        } else {
+            echo json_encode(array('ok' => false, 'message' => "Erro: " . $status['message'] ));
+        }
+    }
     
     public function listarCaixas()
     {

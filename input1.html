@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Evitar Abertura de Select</title>
+    <script src="http://localhost:9000/frontend/libs/cleave.js"></script>
+
+</head>
+<body>
+
+    <input type="text" id="cpf">
+    <input type="text" id="valor">
+
+    <button id="vervalores">Ver valores</button>
+
+    <script>
+        document.getElementById('vervalores').addEventListener('click', function(){
+            console.log(document.getElementById('cpf').value);
+            console.log(document.getElementById('valor').value);
+        });
+
+        var cpf_cleave = new Cleave('#cpf', {
+            delimiters: ['.', '.', '-'],
+            blocks: [3, 3, 3, 2],
+            numericOnly: true
+        });
+        var valor_cleave = new Cleave('#valor', {
+            numeral: true,
+            numeralThousandsGroupStyle: 'thousand'
+        })
+    </script>
+
+</body>
+</html>

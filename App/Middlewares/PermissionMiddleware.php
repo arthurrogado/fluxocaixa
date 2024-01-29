@@ -11,6 +11,12 @@ class PermissionMiddleware {
 
     public static function checkConditions($conditions) {
         
+        # Exemplo de uso para verificar se o id_escritorio do usuario logado é igual ao id_escritorio da obra
+        # (ou qualquer outro dado da sua regra de negócio)
+        // $conditions = [
+        //     "id_escritorio" => $obra->id_escritorio
+        // ];
+
         $usuario = Usuario::checkLogin();
         if(!$usuario) {
             return false;
