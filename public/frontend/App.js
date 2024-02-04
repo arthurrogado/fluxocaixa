@@ -65,21 +65,6 @@ const urlLocationHandler = async () => {
     }
 
     loadPage(path)
-
-    // const route = urlRoutes[path] || urlRoutes[404]
-    // if(route.redirect) {
-    //     window.history.pushState({}, '', route.redirect)
-    //     navigateTo(route.redirect)
-    // } else if(route.template) {
-    //     await fetch(`${route.template}`)
-    //     .then(response => response.text())
-    //     .then(data => {
-    //         document.querySelector(main).innerHTML = data
-    //     })
-    //     console.log('route: ', route)
-    // } else (
-    //     pass
-    // )
 }
 
 async function loadPage(path) {
@@ -99,6 +84,14 @@ async function loadPage(path) {
         }
     }
 
+    // If the response has no html, use /frontend/Utils/404.html
+    if (!response.html) {
+        response = await fetch('/frontend/Utils/404.html')
+        response = await response.text()
+        document.querySelector(main).innerHTML = response
+        return
+    }
+
     document.querySelector(main).innerHTML = response?.html;
     document.querySelector(main).innerHTML += `<style>${response?.css}</style>`;
     let script = document.createElement('script');
@@ -110,7 +103,7 @@ async function loadPage(path) {
     // get all the scripts from the response
     // make them into elements
     // and append them to the body
-    const response_document = new DOMParser().parseFromString(response, 'text/html')
+    const response_document = new DOMParser().parseFromString(response, 'text/html') // this DOMParser is used to convert the string into a document, so we can use querySelectorAll
     const scripts = response_document.querySelectorAll('script')
     scripts.forEach(script => {
         const scriptElement = document.createElement('script')
@@ -123,11 +116,11 @@ async function loadPage(path) {
 
 }
 
-window.onpopstate = urlLocationHandler
+window.onpopstate = urlLocationHandler // onpopstate is called when the user clicks the back or forward button
 
-window.route = navigateTo
+window.route = navigateTo // make the navigateTo function available in the window object (global scope)
 
-urlLocationHandler()
+urlLocationHandler() // call the urlLocationHandler when the page loads for the first time
 
 
 

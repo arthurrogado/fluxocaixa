@@ -26,13 +26,13 @@ abstract class Action {
         // $currentClass = strtolower( $currentClass );
         $currentClass = lcfirst($currentClass);
 
-        // criar array com as variáveis que serão usadas na view: html, css, js, etc
+        // Create an array with the variables that will be used in the view: html, css, js, etc
         $result = array();
 
+        // get html
         ob_start();
 
         $base_app_views =  "../../App/Views/";
-
 
         if(file_exists($base_app_views . $currentClass . "/" . $view.".phtml")){
             require_once $base_app_views . $currentClass . "/" . $view.".phtml";
@@ -50,7 +50,6 @@ abstract class Action {
             echo "View não encontrada. Current class: " . $currentClass . " View: " . $view . ".html <br> Caminho: " . $base_app_views . $currentClass . "/" . $view . ".phtml";
         }
 
-        
         $html = ob_get_clean();
         $html = (string)$html;
         $result['html'] = $html;
@@ -67,8 +66,6 @@ abstract class Action {
         $css = ob_get_clean();
         $css = (string)$css;
         $result['css'] = $css;
-
-
         
         // get js
         ob_start();
@@ -81,14 +78,11 @@ abstract class Action {
         $js = ob_get_clean();
         $js = (string)$js;
         $result['js'] = $js;
+        
         $result['class'] = $currentClass;
         $result['view'] = $view;
 
         echo json_encode($result);
-
-        // echo json_encode($result);
-
-        
 
     }
 

@@ -63,11 +63,18 @@ function atualizarSidebar(){
                 ];
 
                 // Usuário comum
-            } else {
+            } else if (usuario.cnpj) {
+                itens = [
+                    [['/home', 'Home', 'fa-home']],
+                    [['/usuarios/listar', 'Usuários', 'fa-users']],
+                ]
+            }
+            
+            else {
                 itens = [
                     [['/home', 'Home', 'fa-solid fa-home']],
                     [
-                        ['/caixas', 'Caixas financeiros', 'fas fa-cash']
+                        ['/caixas', 'Caixas financeiros', 'fas fa-money']
                     ]
                 ]
             }

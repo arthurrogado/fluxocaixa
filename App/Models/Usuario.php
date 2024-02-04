@@ -87,17 +87,20 @@ class Usuario extends Model
             // return self::getUsuario($_SESSION['usuario']->id);
             return $_SESSION['usuario'];
         } else {
-            return false;
+            if(isset($_SESSION['escritorio'])) {
+                return $_SESSION['escritorio'];
+            }
         }
+        return false;
     }
 
-    public static function login($usuario, $senha) {
-        self::getConn();
+    public static function login($username, $senha) {
         $query = "SELECT * FROM usuarios WHERE usuario = :usuario";
-        $stmt = self::$conn->prepare($query);
-        $stmt->bindValue(":usuario", $usuario);
+        $stmt = self::getConn()->prepare($query);
+        $stmt->bindValue(":usuario", $username);
         $stmt->execute();
         $usuario = $stmt->fetch(\PDO::FETCH_OBJ);
+
         if($usuario) {
             if(password_verify($senha, $usuario->senha)) {
                 // session_start();
@@ -107,7 +110,25 @@ class Usuario extends Model
                 return false;
             }
         } else {
-            return false;
+            // return false;
+            // Tenta logar com o CNPJ do escritório
+            $query = "SELECT * FROM escritorios WHERE cnpj = :usuario";
+            $stmt = self::getConn()->prepare($query);
+            $stmt->bindValue(":usuario", $username);
+            $stmt->execute();
+            $escritorio = $stmt->fetch(\PDO::FETCH_OBJ);
+
+            if($escritorio) {
+                if(password_verify($senha, $escritorio->senha)) {
+                    // session_start();
+                    $_SESSION['escritorio'] = $escritorio;
+                    return true;
+                } else {
+                    return false;
+                }
+            } else {
+                return false;
+            }
         }
     }
 

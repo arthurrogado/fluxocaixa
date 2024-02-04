@@ -37,8 +37,8 @@ document.querySelector('#controlSidebar').addEventListener('click', () => {
 
 // Se a tela for menor que 768px, o sidebar é fechado
 const verificarTamanhoTela = async () => {
-    // se estiver na tela de login, não fazer nada
-    if(window.location.pathname == '/login') return
+    if(window.location.pathname == '/login') return // se estiver na tela de login, não fazer nada
+    
     await new Promise(resolve => setTimeout(resolve, 500));
     if(window.innerWidth < 768) {
         document.querySelector('nav').classList.remove('active');

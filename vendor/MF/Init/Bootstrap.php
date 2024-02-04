@@ -29,7 +29,6 @@ abstract class Bootstrap {
                 $url = $route['redirect'];
             }
 
-
             if(isset($route['route']) && $url == $route['route']) {
 
                 // Verify if the route is public, if not, verify if the user is logged in

@@ -9,6 +9,43 @@ use MF\Models\Container;
 
 class PermissionMiddleware {
 
+    public static function checkIsAdmin() {
+        $usuario = Usuario::checkLogin();
+        if(!$usuario) {
+            // return false;
+            exit;
+        }
+        if($usuario->id == 1) {
+            return true;
+        }
+        echo json_encode(["message" => "Você não é o admin master!", "ok" => false]);    
+        exit;
+    }
+
+    public static function checkIsEscritorio() {
+        // Verificar se o usuário logado é um escritório (ou seja, se tem CNPJ)
+        $usuario = Usuario::checkLogin();
+        if(!$usuario) {
+            exit;
+        }
+        if($usuario->cnpj_escritorio) {
+            return true;
+        }
+        echo json_encode(["message" => "Você não é um escritório!", "ok" => false]);
+    }
+
+    public static function checkIsUsuario() {
+        // Verificar se o usuário logado é um usuário comum (ou seja, se não tem CNPJ)
+        $usuario = Usuario::checkLogin();
+        if(!$usuario) {
+            exit;
+        }
+        if(!$usuario->cnpj_escritorio) {
+            return true;
+        }
+        echo json_encode(["message" => "Você não é um usuário comum!", "ok" => false]);
+    }
+
     public static function checkConditions($conditions) {
         
         # Exemplo de uso para verificar se o id_escritorio do usuario logado é igual ao id_escritorio da obra
