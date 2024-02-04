@@ -1,6 +1,7 @@
 <?php
 
 namespace MF\Init;
+use App\Models\Usuario;
 
 abstract class Bootstrap {
 
@@ -34,7 +35,9 @@ abstract class Bootstrap {
                 // Verify if the route is public, if not, verify if the user is logged in
                 if(!isset($route['public']) || (isset($route['public']) && $route['public'] == false)) {
                     // session_start();
-                    if(!isset($_SESSION['usuario']) || $_SESSION['usuario'] == '') {
+                    $usuario = Usuario::checkLogin();
+                    // if(!isset($_SESSION['usuario']) || $_SESSION['usuario'] == '') {
+                    if(!$usuario) {
                         echo json_encode(["message" => "Você não está logado!", "ok" => false, 'redirect' => "/login"]);
                         exit;
                     }
