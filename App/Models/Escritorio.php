@@ -53,12 +53,21 @@ class Escritorio extends Model {
         );
     }
 
-    public function getEscritorio($id)
+    public function getEscritorioInArray($id)
+    {
+        return $this->select(
+            "escritorios",
+            ["*"],
+            "id = $id"
+        );
+    }
+
+    public function getEscritorioByCnpj($cnpj)
     {
         return $this->selectOne(
             "escritorios",
             ["*"],
-            "id = $id"
+            "cnpj = '$cnpj'"
         );
     }
 

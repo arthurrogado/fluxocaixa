@@ -3,6 +3,7 @@
 namespace App\Controllers;
 use App\Middlewares\PermissionMiddleware;
 use App\Models\Escritorio;
+use App\Models\Usuario;
 
 class EscritoriosController {
 
@@ -26,8 +27,18 @@ class EscritoriosController {
 
     public function getEscritorios()
     {
+        
         $escritorio = new Escritorio();
-        $status = $escritorio->getEscritorios();
+        if(PermissionMiddleware::isAdmin()){
+            $status = $escritorio->getEscritorios();
+        } else if(PermissionMiddleware::isEscritorio()){
+            $id_escritorio = Usuario::checkLogin()->id; // Pegar o ID do escritório logado
+            $status = $escritorio->getEscritorioInArray($id_escritorio);
+        } else {
+            echo json_encode(array('ok' => false, 'message' => "Você não tem permissão para ver os escritórios. Faça login com o CNPJ do escritório para isso."));
+            return;
+        }
+
         if($status['ok']) {
             echo json_encode(array('ok' => true, 'escritorios' => $status['data']));
         } else {
@@ -38,7 +49,7 @@ class EscritoriosController {
     public function getEscritorio($id)
     {
         $escritorio = new Escritorio();
-        $status = $escritorio->getEscritorio($id);
+        $status = $escritorio->visualizarEscritorio($id);
         if($status['ok']) {
             echo json_encode(array('ok' => true, 'escritorio' => $status['data']));
         } else {

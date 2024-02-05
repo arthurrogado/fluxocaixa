@@ -30,6 +30,15 @@ class Usuario extends Model
         );
     }
 
+    public function getUsuariosFromEscritorio($id_escritorio)
+    {
+        return $this->select(
+            "usuarios",
+            ["id", "nome", "usuario"],
+            "id_escritorio = '$id_escritorio'"
+        );
+    }
+
     public function visualizarUsuario($id)
     {
         $status = $this->selectOne(
@@ -38,17 +47,35 @@ class Usuario extends Model
             "id = $id"
         );
         if($status['data']) unset($status['data']->senha);
+        // Pegar o cnpj do escritório do usuário
+        $escritorio = $this->selectOne(
+            "escritorios",
+            ["cnpj"],
+            "id = " . $status['data']->id_escritorio
+        );
+        $status['data']->cnpj_escritorio = $escritorio['data']->cnpj;
         return $status;
     }
         
-    public function editarUsuario($id, $nome, $usuario, $cnpj_escritorio)
+    public function editarUsuario($id, $nome, $usuario, $id_escritorio)
     {
         return $this->update(
             "usuarios",
-            ["nome", "usuario", "cnpj_escritorio"],
-            [$nome, $usuario, $cnpj_escritorio],
+            ["nome", "usuario", "id_escritorio"],
+            [$nome, $usuario, $id_escritorio],
             "id = $id"
         );
+    }
+
+    public function editarUsuarioCnpj($id, $nome, $usuario, $cnpj_escritorio)
+    {
+        $sql = "UPDATE usuarios SET nome = :nome, usuario = :usuario, id_escritorio = (SELECT id FROM escritorios WHERE cnpj = :cnpj_escritorio) WHERE id = :id";
+        $stmt = $this->db->prepare($sql);
+        $stmt->bindValue(":nome", $nome);
+        $stmt->bindValue(":usuario", $usuario);
+        $stmt->bindValue(":cnpj_escritorio", $cnpj_escritorio);
+        $stmt->bindValue(":id", $id);
+        return $stmt->execute();
     }
 
     public function mudarSenhaUsuario($id, $senha)

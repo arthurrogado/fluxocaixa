@@ -8,19 +8,19 @@ class Usuarios extends Action {
 
     public function listar() 
     {
-        PermissionMiddleware::checkIsAdmin();
+        PermissionMiddleware::checkIsAdminOrEscritorio();
         $this->render("listar");
     }
 
     public function criar() 
     {
-        PermissionMiddleware::checkIsAdmin();
+        PermissionMiddleware::checkIsAdminOrEscritorio();
         $this->render("criar");
     }
 
     public function visualizar()
     {
-        PermissionMiddleware::checkIsAdmin();
+        PermissionMiddleware::checkIsAdminOrEscritorio();
         $this->render("visualizar");
     }
 

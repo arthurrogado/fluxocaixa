@@ -2,6 +2,7 @@
 
 namespace App\Controllers;
 use App\Middlewares\PermissionMiddleware;
+use App\Models\Escritorio;
 use App\Models\Usuario;
 
 class UsuariosController {
@@ -36,7 +37,18 @@ class UsuariosController {
     public function getUsuarios()
     {
         $user = new Usuario();
-        $status = $user->getUsuarios();
+        if(PermissionMiddleware::isAdmin()) {
+            // Se for admin, pode ver todos os usuários
+            $status = $user->getUsuarios();
+        } else if(PermissionMiddleware::isEscritorio()) {
+            // Se não for admin, só pode ver os usuários se for um escritório
+            $id_escritorio = Usuario::checkLogin()->id; // Pegar o ID do escritório logado
+            $status = $user->getUsuariosFromEscritorio($id_escritorio);
+        } else {
+            echo json_encode(array('ok' => false, 'message' => "Você não tem permissão para ver os usuários. Faça login com o CNPJ do escritório para isso."));
+            return;
+        }
+
         if($status['ok']) {
             echo json_encode(array('ok' => true, 'usuarios' => $status['data']));
         } else {
@@ -58,25 +70,44 @@ class UsuariosController {
 
     public function editarUsuario()
     {
-        PermissionMiddleware::checkConditions(["id" => 1]);
+        // PermissionMiddleware::checkConditions(["id" => 1]);
+        // PermissionMiddleware::checkIsAdmin();
 
         $id = filter_input(INPUT_POST, 'id');
         $nome = filter_input(INPUT_POST, "nome", FILTER_DEFAULT);
         $usuario = filter_input(INPUT_POST, 'usuario');
-        $cnpj_escritorio = filter_input(INPUT_POST, 'cnpj_escritorio');
 
-        if($id == 1) {
-            echo json_encode(array('ok' => false, 'message' => "Não é possível editar o usuário master"));
-            return;
+        // Se o usuário for um escritório, ele não pode mudar o escritorio do usuario
+        if(PermissionMiddleware::isEscritorio()) {
+            $cnpj_escritorio = Usuario::checkLogin()->cnpj; // Pegar o ID do escritório logado
+        } else {
+            $cnpj_escritorio = filter_input(INPUT_POST, 'cnpj_escritorio');
         }
 
-        if($usuario == "") {
-            echo json_encode(array('ok' => false, 'message' => "Usuário não pode ser vazio"));
-            return;
+        // // Pegar o id do escritório pelo cnpj
+            // $class = new Escritorio();
+            // $status = $class->getEscritorioByCnpj($cnpj_escritorio);
+            // if(!$status['ok']) {
+            //     echo json_encode(array('ok' => false, 'message' => "Não encontrei esse escritório. Erro: " . $status['message'] ));
+            //     return;
+            // }
+            // $id_escritorio = $status['data']->id;
+        // NÃO PRECISA FAZER ISSO, POIS O MODEL USUARIO JÁ TEM UM MÉTODO PARA ISSO COM QUERY STRING
+
+        // Verificações | regras de negócio
+        $exceptions = [
+            $id == 1 => "Não é possível editar o usuário master",
+            $usuario == "" => "Usuário não pode ser vazio",
+        ];
+        foreach ($exceptions as $key => $value) {
+            if($key) {
+                echo json_encode(array('ok' => false, 'message' => $value));
+                return;
+            }
         }
 
         $user = new Usuario();
-        $status = $user->editarUsuario($id, $nome, $usuario, $cnpj_escritorio);
+        $status = $user->editarUsuarioCnpj($id, $nome, $usuario, $cnpj_escritorio);
         if($status['ok']) {
             echo json_encode(array('ok' => true, 'message' => "Usuário editado com sucesso"));
         } else {

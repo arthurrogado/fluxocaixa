@@ -44,6 +44,7 @@ class Visulizar {
         // Preencher select de escritórios
         this.httpClient.makeRequest('/api/escritorios/listar')
             .then(response => {
+                console.log(response)
                 if(response.ok) {
                     response.escritorios.forEach(escritorio => {
                         let option = document.createElement('option');

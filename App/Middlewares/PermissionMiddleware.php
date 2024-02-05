@@ -9,41 +9,48 @@ use MF\Models\Container;
 
 class PermissionMiddleware {
 
-    public static function checkIsAdmin() {
+    public static function isAdmin() {
         $usuario = Usuario::checkLogin();
-        if(!$usuario) {
-            // return false;
+        return $usuario && $usuario->id == 1;
+    }
+
+    public static function checkIsAdmin() {
+        if (!self::isAdmin()) {
+            echo json_encode(["message" => "Você não é o admin master!", "ok" => false]);
             exit;
         }
-        if($usuario->id == 1) {
-            return true;
-        }
-        echo json_encode(["message" => "Você não é o admin master!", "ok" => false]);    
-        exit;
+    }
+
+    public static function isEscritorio() {
+        $usuario = Usuario::checkLogin();
+        // if(!$usuario) {
+        //     return false;
+        // }
+        // if($usuario->cnpj) {
+        //     return true;
+        // }
+        return $usuario != false && isset($usuario->cnpj);
     }
 
     public static function checkIsEscritorio() {
-        // Verificar se o usuário logado é um escritório (ou seja, se tem CNPJ)
-        $usuario = Usuario::checkLogin();
-        if(!$usuario) {
+        if (!self::isEscritorio()) {
+            echo json_encode(["message" => "Você não é um escritório!", "ok" => false]);
             exit;
         }
-        if($usuario->cnpj_escritorio) {
-            return true;
+    }
+
+    public static function checkIsAdminOrEscritorio() {
+        if (!self::isAdmin() && !self::isEscritorio()) {
+            echo json_encode(["message" => "Você não é o admin master ou um escritório!", "ok" => false]);
+            exit;
         }
-        echo json_encode(["message" => "Você não é um escritório!", "ok" => false]);
     }
 
     public static function checkIsUsuario() {
-        // Verificar se o usuário logado é um usuário comum (ou seja, se não tem CNPJ)
-        $usuario = Usuario::checkLogin();
-        if(!$usuario) {
+        if (self::isEscritorio()) {
+            echo json_encode(["message" => "Você não é um usuário comum!", "ok" => false]);
             exit;
         }
-        if(!$usuario->cnpj_escritorio) {
-            return true;
-        }
-        echo json_encode(["message" => "Você não é um usuário comum!", "ok" => false]);
     }
 
     public static function checkConditions($conditions) {
