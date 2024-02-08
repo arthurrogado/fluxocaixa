@@ -40,7 +40,7 @@ class Carteira extends Model
         return $this->selectOne(
             "carteiras",
             ["*"],
-            "id = $id"
+            ["id" => $id]
         );
     }
 

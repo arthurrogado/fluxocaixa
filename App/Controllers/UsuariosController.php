@@ -84,7 +84,8 @@ class UsuariosController
         $escritorio = $user->selectOne(
             "escritorios",
             ["cnpj"],
-            "id = " . $usuario->id_escritorio
+            // "id = " . $usuario->id_escritorio
+            ["id" => $usuario->id_escritorio]
         );
 
         $usuario->cnpj_escritorio = $escritorio->cnpj;

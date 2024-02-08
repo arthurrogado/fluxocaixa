@@ -9,7 +9,7 @@ class EscritoriosController {
 
     public function criarEscritorio()
     {
-        PermissionMiddleware::checkConditions(["id" => 1]);
+        PermissionMiddleware::checkIsAdmin();
 
         $nome = filter_input(INPUT_POST, "nome", FILTER_DEFAULT);
         $cnpj = filter_input(INPUT_POST, 'cnpj');
@@ -51,6 +51,9 @@ class EscritoriosController {
         $id = filter_input(INPUT_POST, 'id');
 
         // Permissões: ser o admin ou ser o próprio escritório
+        PermissionMiddleware::checkIsAdminOrEscritorio(); // Evita que usuários comuns vejam detalhes de escritório
+        PermissionMiddleware::checkConditions(["id" => $id]); // Verifica se o usuário logado é o próprio escritório
+        // Não tem perigo de checar o id de um usuário comum
 
         $escritorio = new Escritorio();
         $escritorio = $escritorio->visualizarEscritorio($id);
@@ -61,11 +64,24 @@ class EscritoriosController {
 
     public function editarEscritorio()
     {
-        PermissionMiddleware::checkConditions(["id" => 1]);
+        // PermissionMiddleware::checkConditions(["id" => 1]);
 
         $id = filter_input(INPUT_POST, 'id');
+
+        // Permissões: ser o admin ou ser o próprio escritório
+        PermissionMiddleware::checkIsAdminOrEscritorio(); // Evita que usuários comuns vejam detalhes de escritório
+        PermissionMiddleware::checkConditions(["id" => $id]); // Verifica se o usuário logado é o próprio escritório)
+        // Não tem perigo de checar o id de um usuário comum
+
+        // Se for o ADMIN, pode mudar o CNPJ, se for escritório, não pode
+        if(PermissionMiddleware::isAdmin()) { 
+            $cnpj = filter_input(INPUT_POST, 'cnpj');
+        } else {
+            $cnpj = Usuario::checkLogin()->cnpj;
+        }
+
+
         $nome = filter_input(INPUT_POST, "nome", FILTER_DEFAULT);
-        $cnpj = filter_input(INPUT_POST, 'cnpj');
         $observacoes = filter_input(INPUT_POST, 'observacoes');
 
         $escritorio = new Escritorio();
@@ -80,7 +96,8 @@ class EscritoriosController {
 
     public function excluirEscritorio()
     {
-        PermissionMiddleware::checkConditions(["id" => 1]);
+        // Somente o ADMIN MASTER pode excluir
+        PermissionMiddleware::checkIsAdmin();
 
         $id = filter_input(INPUT_POST, 'id');
         $escritorio = new Escritorio();

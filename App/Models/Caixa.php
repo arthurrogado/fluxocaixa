@@ -33,7 +33,8 @@ class Caixa extends Model
         return $this->selectOne(
             "caixas",
             ["*"],
-            "id = $id"
+            // "id = $id"
+            ["id" => $id]
         );
     }
 

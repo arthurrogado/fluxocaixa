@@ -2,6 +2,7 @@
 
 namespace App\Controllers\Pages;
 use MF\Controller\Action;
+use App\Middlewares\PermissionMiddleware;
 
 class Escritorios extends Action {
 
@@ -17,6 +18,7 @@ class Escritorios extends Action {
 
     public function visualizar()
     {
+        PermissionMiddleware::checkIsAdminOrEscritorio();
         $this->render("visualizar");
     }
 

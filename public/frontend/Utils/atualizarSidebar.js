@@ -62,14 +62,16 @@ function atualizarSidebar(){
                     [['/configuracoes', 'Configurações', 'fa-cog']],
                 ];
 
-                // Usuário comum
+                // ESCRITÓRIO
             } else if (usuario.cnpj) {
                 itens = [
                     [['/home', 'Home', 'fa-home']],
                     [['/usuarios/listar', 'Usuários', 'fa-users']],
+                    [['/escritorio/visualizar?id='+usuario.id, "Meu escritório", 'fa-building']],
                 ]
             }
-            
+
+                // USUÁRIO
             else {
                 itens = [
                     [['/home', 'Home', 'fa-solid fa-home']],

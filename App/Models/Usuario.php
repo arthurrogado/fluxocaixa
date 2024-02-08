@@ -44,7 +44,8 @@ class Usuario extends Model
         return $this->selectOne(
             "usuarios",
             ["*"],
-            "id = $id"
+            // "id = $id"
+            ["id" => $id]
         );
     }
         
@@ -93,7 +94,8 @@ class Usuario extends Model
         $status = self::selectOne(
             "usuarios",
             ["*"],
-            "usuario = '$usuario'"
+            // "usuario = '$usuario'"
+            ["usuario" => $usuario]
         );
         return $status['data'] != false;
     }

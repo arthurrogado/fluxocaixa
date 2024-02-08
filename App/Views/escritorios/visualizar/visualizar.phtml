@@ -10,8 +10,8 @@
             <input type="text" name="nome" required readonly>
             <label>Nome do escritório</label>
         </div>
-        <div class="input-field">
-            <input type="text" name="cnpj" required readonly>
+        <div class="input-field"  >
+            <input type="text" name="cnpj" required readonly <?php if(isset($_SESSION['escritorio'])) echo "disabled" ?> >
             <label>CNPJ</label>
         </div>
         <div class="input-field">

@@ -54,7 +54,8 @@ class Operacao extends Model
         return $this->selectOne(
             "operacoes",
             ["*"],
-            "id = $id"
+            // "id = $id"
+            ["id" => $id]
         );
     }
 

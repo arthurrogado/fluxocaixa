@@ -75,7 +75,7 @@ class PermissionMiddleware {
         foreach ($conditions as $key => $value) {
             if($usuario->$key != $value) {
                 echo json_encode(["message" => "Você não tem permissão! Não atende à condição necessária!", "ok" => false]);
-                exit;
+                exit();
             }
         }
 

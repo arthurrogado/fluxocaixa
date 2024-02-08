@@ -31,7 +31,8 @@ class Escritorio extends Model {
         return $this->selectOne(
             "escritorios",
             ["*"],
-            "id = $id"
+            // "id = $id"
+            ["id" => $id]
         );
     }
 
@@ -67,7 +68,8 @@ class Escritorio extends Model {
         return $this->selectOne(
             "escritorios",
             ["*"],
-            "cnpj = '$cnpj'"
+            // "cnpj = '$cnpj'"
+            ["cnpj" => $cnpj]
         );
     }
 

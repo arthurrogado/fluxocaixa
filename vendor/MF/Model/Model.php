@@ -79,15 +79,16 @@ abstract class Model {
         }
     }
 
-    public static function selectOne(string $table, array $columns, string $where = null) {
+    public static function selectOne1(string $table, array $columns, string $where = null) {
 
         // Example: select("users", ["name", "email"], "id = 1");
-        try {
+        // try {
             // self::getConn();
             $query = "SELECT ".implode(", ", $columns)." FROM $table";
             if($where){
                 $query .= " WHERE $where";
             }
+
             $stmt = self::$conn->prepare($query);
             $stmt->execute();
             $result = $stmt->fetch(\PDO::FETCH_OBJ);
@@ -97,10 +98,42 @@ abstract class Model {
 
             // if(!$result) return ["ok" => false, "message" => "Registro não encontrado"];
             // return ["ok" => true, "data" => $result];
+        // } catch (\Throwable $th) {
+        //     //throw $th;
+        //     throw new MyAppException("Erro ao selecionar registro: " . $th->getMessage());
+        //     // return ["ok" => false, "message" => $th->getMessage(), "line" => $th->getLine(), "file" => $th->getFile()];
+        // }
+    }
+
+    public static function selectOne(string $table, array $columns, array $where = [])
+    {
+        try {
+            $query = "SELECT " . implode(", ", $columns) . " FROM $table";
+            if ($where) {
+                // Usar bindValue no where
+                $query .= " WHERE ";
+                foreach ($where as $key => $value) {
+                    $query .= "$key = :$key";
+                    if (next($where)) {
+                        $query .= " AND ";
+                    }
+                }
+    
+                $stmt = self::$conn->prepare($query);
+                foreach ($where as $key => $value) {
+                    $stmt->bindValue(":$key", $value);
+                }
+            } else {
+                $stmt = self::$conn->prepare($query);
+            }
+    
+            $stmt->execute();
+            $result = $stmt->fetch(\PDO::FETCH_OBJ);
+    
+            if (!$result) throw new MyAppException("Erro: registro não encontrado.");
+            return $result;
         } catch (\Throwable $th) {
-            //throw $th;
             throw new MyAppException("Erro ao selecionar registro: " . $th->getMessage());
-            // return ["ok" => false, "message" => $th->getMessage(), "line" => $th->getLine(), "file" => $th->getFile()];
         }
     }
 
