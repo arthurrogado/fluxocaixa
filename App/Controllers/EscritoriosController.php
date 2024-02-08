@@ -46,27 +46,17 @@ class EscritoriosController {
         }
     }
 
-    public function getEscritorio($id)
-    {
-        $escritorio = new Escritorio();
-        $status = $escritorio->visualizarEscritorio($id);
-        if($status['ok']) {
-            echo json_encode(array('ok' => true, 'escritorio' => $status['data']));
-        } else {
-            echo json_encode(array('ok' => false, 'message' => "Erro: " . $status['message'] ));
-        }
-    }
-
     public function visualizarEscritorio()
     {
         $id = filter_input(INPUT_POST, 'id');
+
+        // Permissões: ser o admin ou ser o próprio escritório
+
         $escritorio = new Escritorio();
-        $status = $escritorio->visualizarEscritorio($id);
-        if($status['ok']) {
-            echo json_encode(array('ok' => true, 'escritorio' => $status['data']));
-        } else {
-            echo json_encode(array('ok' => false, 'message' => "Erro: " . $status['message'] ));
-        }
+        $escritorio = $escritorio->visualizarEscritorio($id);
+
+        echo json_encode(array('ok' => true, 'escritorio' => $escritorio));
+
     }
 
     public function editarEscritorio()

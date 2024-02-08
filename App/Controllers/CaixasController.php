@@ -87,10 +87,19 @@ class CaixasController
     {
         // Permissões: 
         // - Usuário deve ter permissão para visualizar caixa
-        // PermissionMiddleware::checkPermissions('visualizarCaixa');
+        PermissionMiddleware::checkPermissions('visualizarCaixa');
 
         $id = filter_input(INPUT_POST, 'id');
         $caixa = new Caixa();
+
+        // Verificar se o caixa (id) tem o mesmo escritório do usuário logado
+        $status = $caixa->visualizarCaixa($id);
+        if(!$status['ok']) {
+            echo json_encode(array('ok' => false, 'message' => "Erro: " . $status['message'] ));
+            exit;
+        }
+        $caixa = $status['data'];
+        PermissionMiddleware::checkConditions(["id_escritorio" => $caixa->id_escritorio]);
 
         $sql = "SELECT 
             c.*, 

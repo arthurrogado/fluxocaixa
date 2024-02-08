@@ -1,11 +1,14 @@
 <?php
 
 namespace App\Controllers;
+
 use App\Middlewares\PermissionMiddleware;
 use App\Models\Escritorio;
 use App\Models\Usuario;
+use MF\Controller\MyAppException;
 
-class UsuariosController {
+class UsuariosController
+{
 
     public function criarUsuario()
     {
@@ -19,28 +22,28 @@ class UsuariosController {
         $cnpj_escritorio = filter_input(INPUT_POST, 'cnpj_escritorio');
 
         $user = new Usuario();
-        
+
         // Verifica se o $usuario já existe
-        if( $user->usuarioExiste($usuario) ) {
+        if ($user->usuarioExiste($usuario)) {
             echo json_encode(array('ok' => false, 'message' => "Usuário já existe"));
             return;
         }
 
         $status = $user->criarUsuario($nome, $usuario, $senha, $cnpj_escritorio);
-        if($status['ok']) {
+        if ($status['ok']) {
             echo json_encode(array('ok' => true, 'message' => "Usuário criado com sucesso"));
         } else {
-            echo json_encode(array('ok' => false, 'message' => "Erro: " . $status['message'] ));
+            echo json_encode(array('ok' => false, 'message' => "Erro: " . $status['message']));
         }
     }
 
     public function getUsuarios()
     {
         $user = new Usuario();
-        if(PermissionMiddleware::isAdmin()) {
+        if (PermissionMiddleware::isAdmin()) {
             // Se for admin, pode ver todos os usuários
             $status = $user->getUsuarios();
-        } else if(PermissionMiddleware::isEscritorio()) {
+        } else if (PermissionMiddleware::isEscritorio()) {
             // Se não for admin, só pode ver os usuários se for um escritório
             $id_escritorio = Usuario::checkLogin()->id; // Pegar o ID do escritório logado
             $status = $user->getUsuariosFromEscritorio($id_escritorio);
@@ -49,10 +52,19 @@ class UsuariosController {
             return;
         }
 
-        if($status['ok']) {
+        if ($status['ok']) {
             echo json_encode(array('ok' => true, 'usuarios' => $status['data']));
         } else {
-            echo json_encode(array('ok' => false, 'message' => "Erro: " . $status['message'] ));
+            echo json_encode(array('ok' => false, 'message' => "Erro: " . $status['message']));
+        }
+    }
+
+    public static function manipulateStatus($status)
+    {
+        if ($status['ok']) {
+            return $status['data'];
+        } else {
+            throw new MyAppException("Error: " . $status['message']);
         }
     }
 
@@ -60,12 +72,26 @@ class UsuariosController {
     {
         $id = filter_input(INPUT_POST, 'id');
         $user = new Usuario();
-        $status = $user->visualizarUsuario($id);
-        if($status['ok']) {
-            echo json_encode(array('ok' => true, 'usuario' => $status['data']));
-        } else {
-            echo json_encode(array('ok' => false, 'message' => "Erro: " . $status['message'] ));
-        }
+        $usuario = $user->visualizarUsuario($id);
+
+        // if(!$status['ok']) throw new MyAppException("Erro ao visualizar usuário: " . $status['message']);
+        // $usuario = $status['data'];
+
+        if ($usuario) unset($usuario->senha);
+        // if($status['data']) unset($status['data']->senha);
+
+        // Pegar o cnpj do escritório do usuário
+        $escritorio = $user->selectOne(
+            "escritorios",
+            ["cnpj"],
+            "id = " . $usuario->id_escritorio
+        );
+
+        $usuario->cnpj_escritorio = $escritorio->cnpj;
+        // $status['data']->cnpj_escritorio = $escritorio['data']->cnpj;
+
+        echo json_encode(array('ok' => true, 'usuario' => $usuario));
+            
     }
 
     public function editarUsuario()
@@ -78,21 +104,11 @@ class UsuariosController {
         $usuario = filter_input(INPUT_POST, 'usuario');
 
         // Se o usuário for um escritório, ele não pode mudar o escritorio do usuario
-        if(PermissionMiddleware::isEscritorio()) {
-            $cnpj_escritorio = Usuario::checkLogin()->cnpj; // Pegar o ID do escritório logado
+        if (PermissionMiddleware::isEscritorio()) {
+            $cnpj_escritorio = null;
         } else {
             $cnpj_escritorio = filter_input(INPUT_POST, 'cnpj_escritorio');
         }
-
-        // // Pegar o id do escritório pelo cnpj
-            // $class = new Escritorio();
-            // $status = $class->getEscritorioByCnpj($cnpj_escritorio);
-            // if(!$status['ok']) {
-            //     echo json_encode(array('ok' => false, 'message' => "Não encontrei esse escritório. Erro: " . $status['message'] ));
-            //     return;
-            // }
-            // $id_escritorio = $status['data']->id;
-        // NÃO PRECISA FAZER ISSO, POIS O MODEL USUARIO JÁ TEM UM MÉTODO PARA ISSO COM QUERY STRING
 
         // Verificações | regras de negócio
         $exceptions = [
@@ -100,18 +116,23 @@ class UsuariosController {
             $usuario == "" => "Usuário não pode ser vazio",
         ];
         foreach ($exceptions as $key => $value) {
-            if($key) {
+            if ($key) {
                 echo json_encode(array('ok' => false, 'message' => $value));
                 return;
             }
         }
 
         $user = new Usuario();
-        $status = $user->editarUsuarioCnpj($id, $nome, $usuario, $cnpj_escritorio);
-        if($status['ok']) {
+        if ($cnpj_escritorio) {
+            $status = $user->editarUsuarioCnpj($id, $nome, $usuario, $cnpj_escritorio);
+        } else {
+            $status = $user->editarUsuario($id, $nome, $usuario);
+        }
+
+        if ($status) {
             echo json_encode(array('ok' => true, 'message' => "Usuário editado com sucesso"));
         } else {
-            echo json_encode(array('ok' => false, 'message' => "Erro: " . $status['message'] ));
+            echo json_encode(array('ok' => false, 'message' => "Erro: " . $status['message']));
         }
     }
 
@@ -124,10 +145,10 @@ class UsuariosController {
 
         $user = new Usuario();
         $status = $user->mudarSenhaUsuario($id, $senha);
-        if($status['ok']) {
+        if ($status['ok']) {
             echo json_encode(array('ok' => true, 'message' => "Senha alterada com sucesso"));
         } else {
-            echo json_encode(array('ok' => false, 'message' => "Erro: " . $status['message'] ));
+            echo json_encode(array('ok' => false, 'message' => "Erro: " . $status['message']));
         }
     }
 
@@ -137,17 +158,17 @@ class UsuariosController {
 
         $id = filter_input(INPUT_POST, 'id');
 
-        if($id == 1) {
+        if ($id == 1) {
             echo json_encode(array('ok' => false, 'message' => "Não é possível excluir o usuário master"));
             return;
         }
 
         $user = new Usuario();
         $status = $user->excluirUsuario($id);
-        if($status['ok']) {
+        if ($status['ok']) {
             echo json_encode(array('ok' => true, 'message' => "Usuário excluído com sucesso"));
         } else {
-            echo json_encode(array('ok' => false, 'message' => "Erro: " . $status['message'] ));
+            echo json_encode(array('ok' => false, 'message' => "Erro: " . $status['message']));
         }
     }
 

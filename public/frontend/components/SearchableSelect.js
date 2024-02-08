@@ -11,6 +11,8 @@ class SearchableSelect {
     constructor(select) {
 
         this.select = select; // Seletor css do select que será usado para extrair as opções
+
+        if(!document.querySelector(this.select)) return; // Verificar se o select existe
         
         // Evitar que o select seja aberto ao clicar no input
         document.querySelector(this.select).addEventListener('mousedown', e => {

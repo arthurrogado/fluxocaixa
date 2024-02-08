@@ -53,6 +53,8 @@ class PermissionMiddleware {
         }
     }
 
+    
+
     public static function checkConditions($conditions) {
         
         # Exemplo de uso para verificar se o id_escritorio do usuario logado é igual ao id_escritorio da obra

@@ -42,6 +42,7 @@ class Visulizar {
 
     preencher_escritorios() {
         // Preencher select de escritórios
+        if(!document.querySelector('#cnpj_escritorio')) return; // Verificar se o select de escritório foi renderizado
         this.httpClient.makeRequest('/api/escritorios/listar')
             .then(response => {
                 console.log(response)

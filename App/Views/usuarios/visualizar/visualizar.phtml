@@ -17,12 +17,22 @@
                 <label>Usuário</label>
             </div>
 
-            <div class="input-field">
-                <select name="cnpj_escritorio" id="cnpj_escritorio" disabled>
-                    <option value=""></option>
-                </select>
-                <label>Escritório</label>
-            </div>
+            <?php
+                // Se for admin, mostrar o campo de cnpj, se for escritório, não mostrar.
+                use App\Middlewares\PermissionMiddleware;
+                if(PermissionMiddleware::isAdmin()):
+            ?>
+
+                <div class="input-field">
+                    <select name="cnpj_escritorio" id="cnpj_escritorio" disabled>
+                        <option value=""></option>
+                    </select>
+                    <label>Escritório</label>
+                </div>
+
+            <?php
+                endif;
+            ?>
 
             <button class="btn btn-primary" id="btn_editar" type="button"> <i class="fa fa-pencil"></i> Editar</button>            
             <a href="#" id="modalMudarSenha">Mudar senha</a>

@@ -22,6 +22,19 @@ class OperacoesController
 
         $id_caixa = $this->getPost('id_caixa');
 
+        // Verificar se o caixa (id_caixa) tem o mesmo escritório do usuário logado
+        $classCaixa = new Caixa();
+        $status = $classCaixa->visualizarCaixa($id_caixa);
+        if(!$status['ok']) {
+            echo json_encode(array('ok' => false, 'message' => "Erro: " . $status['message'] ));
+            exit;
+        }
+        $caixa = $status['data'];
+        if($caixa->id_escritorio != Usuario::checkLogin()->id_escritorio) {
+            echo json_encode(array('ok' => false, 'message' => "Você não tem permissão para visualizar operações desse caixa. Você é de outro escritório."));
+            exit;
+        }
+
         $classOperacao = new Operacao();
         $status = $classOperacao->getOperacoesCaixa($id_caixa);
         if(!$status['ok']) {
@@ -85,6 +98,19 @@ class OperacoesController
         $tipo = $this->getPost('tipo');
         $id_usuario = Usuario::checkLogin()->id;
 
+        // Verificar se o caixa (id_caixa) tem o mesmo escritório do usuário logado
+        $classCaixa = new Caixa();
+        $status = $classCaixa->visualizarCaixa($id_caixa);
+        if(!$status['ok']) {
+            echo json_encode(array('ok' => false, 'message' => "Erro: " . $status['message'] ));
+            exit;
+        }
+        $caixa = $status['data'];
+        if($caixa->id_escritorio != Usuario::checkLogin()->id_escritorio) {
+            echo json_encode(array('ok' => false, 'message' => "Você não tem permissão para criar operações nesse caixa. Você é de outro escritório."));
+            exit;
+        }
+
         // Verifica se a carteira permite entrada ou saída
         $this->verificarEntradaSaidaCarteira($id_carteira, $tipo);
 
@@ -110,6 +136,34 @@ class OperacoesController
         $valor = $this->getPost('valor');
         $data = $this->getPost('data');
         $id_carteira = $this->getPost('id_carteira');
+
+
+
+        
+        // Verificar se o caixa da operação (id) tem o mesmo escritório do usuário logado
+        $classOperacao = new Operacao();
+        $status = $classOperacao->getOperacao($id);
+        if(!$status['ok']) {
+            echo json_encode(array('ok' => false, 'message' => "Erro: " . $status['message'] ));
+            exit;
+        }
+        $operacao = $status['data'];
+        $id_caixa = $operacao->id_caixa;
+        $classCaixa = new Caixa();
+        $status = $classCaixa->visualizarCaixa($id_caixa);
+        if(!$status['ok']) {
+            echo json_encode(array('ok' => false, 'message' => "Erro: " . $status['message'] ));
+            exit;
+        }
+        $caixa = $status['data'];
+        if($caixa->id_escritorio != Usuario::checkLogin()->id_escritorio) {
+            echo json_encode(array('ok' => false, 'message' => "Você não tem permissão para editar operações desse caixa. Você é de outro escritório."));
+            exit;
+        }
+
+
+
+
 
         // Verificar se a nova carteira permite entrada ou saída
         $classOperacao = new Operacao();

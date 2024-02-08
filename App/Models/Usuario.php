@@ -41,28 +41,19 @@ class Usuario extends Model
 
     public function visualizarUsuario($id)
     {
-        $status = $this->selectOne(
+        return $this->selectOne(
             "usuarios",
             ["*"],
             "id = $id"
         );
-        if($status['data']) unset($status['data']->senha);
-        // Pegar o cnpj do escritório do usuário
-        $escritorio = $this->selectOne(
-            "escritorios",
-            ["cnpj"],
-            "id = " . $status['data']->id_escritorio
-        );
-        $status['data']->cnpj_escritorio = $escritorio['data']->cnpj;
-        return $status;
     }
         
-    public function editarUsuario($id, $nome, $usuario, $id_escritorio)
+    public function editarUsuario($id, $nome, $usuario)
     {
         return $this->update(
             "usuarios",
-            ["nome", "usuario", "id_escritorio"],
-            [$nome, $usuario, $id_escritorio],
+            ["nome", "usuario"],
+            [$nome, $usuario],
             "id = $id"
         );
     }
@@ -70,7 +61,7 @@ class Usuario extends Model
     public function editarUsuarioCnpj($id, $nome, $usuario, $cnpj_escritorio)
     {
         $sql = "UPDATE usuarios SET nome = :nome, usuario = :usuario, id_escritorio = (SELECT id FROM escritorios WHERE cnpj = :cnpj_escritorio) WHERE id = :id";
-        $stmt = $this->db->prepare($sql);
+        $stmt = self::$conn->prepare($sql);
         $stmt->bindValue(":nome", $nome);
         $stmt->bindValue(":usuario", $usuario);
         $stmt->bindValue(":cnpj_escritorio", $cnpj_escritorio);

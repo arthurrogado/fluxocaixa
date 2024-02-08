@@ -4,6 +4,7 @@ namespace MF\Model;
 // use App\Config\Config;
 use App\Config\Config;
 use App\Connection;
+use MF\Controller\MyAppException;
 
 abstract class Model {
 
@@ -78,7 +79,7 @@ abstract class Model {
         }
     }
 
-    public static function selectOne(string $table, array $columns, string $where = null) : array {
+    public static function selectOne(string $table, array $columns, string $where = null) {
 
         // Example: select("users", ["name", "email"], "id = 1");
         try {
@@ -90,10 +91,16 @@ abstract class Model {
             $stmt = self::$conn->prepare($query);
             $stmt->execute();
             $result = $stmt->fetch(\PDO::FETCH_OBJ);
-            return ["ok" => true, "data" => $result];
+
+            if(!$result) throw new MyAppException("Erro: registro não encontrado.");
+            return $result;
+
+            // if(!$result) return ["ok" => false, "message" => "Registro não encontrado"];
+            // return ["ok" => true, "data" => $result];
         } catch (\Throwable $th) {
             //throw $th;
-            return ["ok" => false, "message" => $th->getMessage(), "line" => $th->getLine()];
+            throw new MyAppException("Erro ao selecionar registro: " . $th->getMessage());
+            // return ["ok" => false, "message" => $th->getMessage(), "line" => $th->getLine(), "file" => $th->getFile()];
         }
     }
 
