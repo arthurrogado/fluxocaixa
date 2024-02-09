@@ -4,6 +4,7 @@ namespace App\Controllers;
 use App\Middlewares\PermissionMiddleware;
 use App\Models\Escritorio;
 use App\Models\Usuario;
+use MF\Controller\MyAppException;
 
 class EscritoriosController {
 
@@ -28,21 +29,21 @@ class EscritoriosController {
     public function getEscritorios()
     {
         
-        $escritorio = new Escritorio();
+        // $escritorio = new Escritorio();
         if(PermissionMiddleware::isAdmin()){
-            $status = $escritorio->getEscritorios();
+            $escritorio = Escritorio::getEscritorios();
         } else if(PermissionMiddleware::isEscritorio()){
             $id_escritorio = Usuario::checkLogin()->id; // Pegar o ID do escritório logado
-            $status = $escritorio->getEscritorioInArray($id_escritorio);
+            $escritorio = Escritorio::getEscritorioInArray($id_escritorio); // Pegar em array pois será iterado no front
         } else {
             echo json_encode(array('ok' => false, 'message' => "Você não tem permissão para ver os escritórios. Faça login com o CNPJ do escritório para isso."));
             return;
         }
 
-        if($status['ok']) {
-            echo json_encode(array('ok' => true, 'escritorios' => $status['data']));
+        if($escritorio) {
+            echo json_encode(array('ok' => true, 'escritorios' => $escritorio));
         } else {
-            echo json_encode(array('ok' => false, 'message' => "Erro: " . $status['message'] ));
+            new MyAppException("Erro ao buscar escritórios");
         }
     }
 

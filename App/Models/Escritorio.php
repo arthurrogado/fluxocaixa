@@ -18,17 +18,17 @@ class Escritorio extends Model {
         );
     }
 
-    public function getEscritorios()
+    public static function getEscritorios()
     {
-        return $this->select(
+        return self::select(
             "escritorios",
             ["id", "nome", "cnpj"]
         );
     }
 
-    public function visualizarEscritorio($id)
+    public static function visualizarEscritorio($id)
     {
-        return $this->selectOne(
+        return self::selectOne(
             "escritorios",
             ["*"],
             // "id = $id"
@@ -54,12 +54,13 @@ class Escritorio extends Model {
         );
     }
 
-    public function getEscritorioInArray($id)
+    public static function getEscritorioInArray($id)
     {
-        return $this->select(
+        return self::select(
             "escritorios",
             ["*"],
-            "id = $id"
+            // "id = $id"
+            ["id" => $id]
         );
     }
 

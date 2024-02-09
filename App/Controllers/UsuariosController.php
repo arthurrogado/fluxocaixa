@@ -43,40 +43,30 @@ class UsuariosController
 
     public function getUsuarios()
     {
-        $user = new Usuario();
         if (PermissionMiddleware::isAdmin()) {
             // Se for admin, pode ver todos os usuários
-            $status = $user->getUsuarios();
+            $usuarios = Usuario::getUsuarios();
         } else if (PermissionMiddleware::isEscritorio()) {
             // Se não for admin, só pode ver os usuários se for um escritório
             $id_escritorio = Usuario::checkLogin()->id; // Pegar o ID do escritório logado
-            $status = $user->getUsuariosFromEscritorio($id_escritorio);
+            $usuarios = Usuario::getUsuariosFromEscritorio($id_escritorio);
         } else {
             echo json_encode(array('ok' => false, 'message' => "Você não tem permissão para ver os usuários. Faça login com o CNPJ do escritório para isso."));
             return;
         }
 
-        if ($status['ok']) {
-            echo json_encode(array('ok' => true, 'usuarios' => $status['data']));
+        if ($usuarios) {
+            echo json_encode(array('ok' => true, 'usuarios' => $usuarios));
         } else {
-            echo json_encode(array('ok' => false, 'message' => "Erro: " . $status['message']));
-        }
-    }
-
-    public static function manipulateStatus($status)
-    {
-        if ($status['ok']) {
-            return $status['data'];
-        } else {
-            throw new MyAppException("Error: " . $status['message']);
+            new MyAppException("Erro ao listar usuários");
         }
     }
 
     public function visualizarUsuario()
     {
         $id = filter_input(INPUT_POST, 'id');
-        $user = new Usuario();
-        $usuario = $user->visualizarUsuario($id);
+        $usuario = Usuario::visualizarUsuario($id);
+        if(!$usuario) new MyAppException("Usuário não encontrado");
         
         // Permissões: ser o admin ou ser o próprio usuário ou ser o escritório do usuário
         if(PermissionMiddleware::IsAdmin()) {
@@ -107,12 +97,7 @@ class UsuariosController
         // if($status['data']) unset($status['data']->senha);
 
         // Pegar o cnpj do escritório do usuário
-        $escritorio = $user->selectOne(
-            "escritorios",
-            ["cnpj"],
-            // "id = " . $usuario->id_escritorio
-            ["id" => $usuario->id_escritorio]
-        );
+        $escritorio = Escritorio::visualizarEscritorio($usuario->id_escritorio);
 
         $usuario->cnpj_escritorio = $escritorio->cnpj;
         // $status['data']->cnpj_escritorio = $escritorio['data']->cnpj;
@@ -165,37 +150,63 @@ class UsuariosController
 
     public function mudarSenhaUsuario()
     {
-        PermissionMiddleware::checkConditions(["id" => 1]);
+        // PermissionMiddleware::checkConditions(["id" => 1]);
+
+        // Pode mudar senha: o ADMIN, o escritório do usuário e o próprio usuário
+        if (PermissionMiddleware::isAdmin()) {
+            // Se for admin, pode mudar a senha de qualquer usuário
+        } else if (PermissionMiddleware::isEscritorio()) {
+            // Se for escritório, só pode mudar a senha de usuários do próprio escritório
+            $id_escritorio = Usuario::checkLogin()->id;
+            $id_usuario = filter_input(INPUT_POST, 'id');
+            $usuario = Usuario::visualizarUsuario($id_usuario);
+            if ($usuario->id_escritorio != $id_escritorio) {
+                throw new MyAppException("Você não tem permissão para mudar a senha desse usuário");
+            }
+        } else {
+            // Se for usuário comum, só pode mudar a própria senha
+            PermissionMiddleware::checkConditions(["id" => Usuario::checkLogin()->id]);
+        }
 
         $id = filter_input(INPUT_POST, 'id');
         $senha = filter_input(INPUT_POST, 'senha');
 
-        $user = new Usuario();
-        $status = $user->mudarSenhaUsuario($id, $senha);
-        if ($status['ok']) {
+        $status = Usuario::mudarSenhaUsuario($id, $senha);
+        if ($status) {
             echo json_encode(array('ok' => true, 'message' => "Senha alterada com sucesso"));
         } else {
-            echo json_encode(array('ok' => false, 'message' => "Erro: " . $status['message']));
+            new MyAppException("Erro ao mudar senha:");
         }
     }
 
     public function excluirUsuario()
     {
-        PermissionMiddleware::checkConditions(["id" => 1]);
-
+        // PermissionMiddleware::checkConditions(["id" => 1]);
+        // Podem excluir: o ADMIN e o escritório do usuário
         $id = filter_input(INPUT_POST, 'id');
+
+        if (PermissionMiddleware::isAdmin()) {
+            // Se for admin, pode excluir qualquer usuário
+        } else if (PermissionMiddleware::isEscritorio()) {
+            // Se for escritório, só pode excluir usuários do próprio escritório
+            if(!PermissionMiddleware::checkConditions(["id" => Usuario::visualizarUsuario($id)->id_escritorio])) {
+                throw new MyAppException("Você não tem permissão para excluir esse usuário");
+            }
+        } else {
+            echo json_encode(array('ok' => false, 'message' => "Você não tem permissão para excluir usuários"));
+            return;
+        }
 
         if ($id == 1) {
             echo json_encode(array('ok' => false, 'message' => "Não é possível excluir o usuário master"));
             return;
         }
 
-        $user = new Usuario();
-        $status = $user->excluirUsuario($id);
-        if ($status['ok']) {
+        $status = Usuario::excluirUsuario($id);
+        if ($status) {
             echo json_encode(array('ok' => true, 'message' => "Usuário excluído com sucesso"));
         } else {
-            echo json_encode(array('ok' => false, 'message' => "Erro: " . $status['message']));
+            new MyAppException("Erro ao excluir usuário");
         }
     }
 

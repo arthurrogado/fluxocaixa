@@ -22,26 +22,27 @@ class Usuario extends Model
         );
     }
 
-    public function getUsuarios()
+    public static function getUsuarios()
     {
-        return $this->select(
+        return self::select(
             "usuarios",
             ["id", "nome", "usuario"]
         );
     }
 
-    public function getUsuariosFromEscritorio($id_escritorio)
+    public static function getUsuariosFromEscritorio($id_escritorio)
     {
-        return $this->select(
+        return self::select(
             "usuarios",
             ["id", "nome", "usuario"],
-            "id_escritorio = '$id_escritorio'"
+            // "id_escritorio = '$id_escritorio'"
+            ["id_escritorio" => $id_escritorio]
         );
     }
 
-    public function visualizarUsuario($id)
+    public static function visualizarUsuario($id)
     {
-        return $this->selectOne(
+        return self::selectOne(
             "usuarios",
             ["*"],
             // "id = $id"
@@ -70,10 +71,10 @@ class Usuario extends Model
         return $stmt->execute();
     }
 
-    public function mudarSenhaUsuario($id, $senha)
+    public static function mudarSenhaUsuario($id, $senha)
     {
         $senha = password_hash($senha, PASSWORD_DEFAULT);
-        return $this->update(
+        return self::update(
             "usuarios",
             ["senha"],
             [$senha],
@@ -81,9 +82,9 @@ class Usuario extends Model
         );
     }
 
-    public function excluirUsuario($id)
+    public static function excluirUsuario($id)
     {
-        return $this->delete(
+        return self::delete(
             "usuarios",
             "id = $id"
         );

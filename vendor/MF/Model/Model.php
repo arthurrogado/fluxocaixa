@@ -63,27 +63,54 @@ abstract class Model {
     }
     
 
-    public static function select(string $table, array $columns, string $where = null) : array {
-
-        // Example: select("users", ["name", "email"], "id = 1");
+    public static function select(string $table, array $columns, array $where = []) : array {
         try {
-            self::getConn(); // Usar esse método estático para que a conexão seja feita, já que o método é estático (não depende de instância da classe)
-
+            self::getConn();
+    
             $query = "SELECT ".implode(", ", $columns)." FROM $table";
-            if($where){
-                $query .= " WHERE $where";
+    
+            if (!empty($where)) {
+                $query .= " WHERE ";
+    
+                $conditions = [];
+                foreach ($where as $key => $value) {
+                    // Verifica se é uma condição composta com operadores lógicos
+                    if (is_array($value)) {
+                        $subconditions = [];
+                        foreach ($value as $subkey => $subvalue) {
+                            $subconditions[] = "$subkey = :$subkey";
+                        }
+                        $conditions[] = "(" . implode(" OR ", $subconditions) . ")";
+                    } else {
+                        $conditions[] = "$key = :$key";
+                    }
+                }
+    
+                $query .= implode(" AND ", $conditions);
             }
+    
             $stmt = self::$conn->prepare($query);
+    
+            foreach ($where as $key => $value) {
+                if (is_array($value)) {
+                    foreach ($value as $subkey => $subvalue) {
+                        $stmt->bindValue(":$subkey", $subvalue);
+                    }
+                } else {
+                    $stmt->bindValue(":$key", $value);
+                }
+            }
+    
             $stmt->execute();
+    
             $result = $stmt->fetchAll(\PDO::FETCH_OBJ);
-            // return ["ok" => true, "data" => $result];
+    
             return $result;
         } catch (\Throwable $th) {
-            //throw $th;
-            // return ["ok" => false, "message" => $th->getMessage(), "line" => $th->getLine()];
             throw new MyAppException("Erro ao selecionar registro:", $th);
         }
     }
+    
 
     public static function selectOne(string $table, array $columns, array $where = [])
     {
@@ -137,7 +164,7 @@ abstract class Model {
         }
     }
 
-    public function update(string $table, array $columns, array $values, string $where){
+    public static function update(string $table, array $columns, array $values, string $where){
         // Example: update("users", ["name", "email"], ["Durov", "durov@telegram"], "id = 1");
         try {
             self::getConn(); // Usar esse método estático para que a conexão seja feita, já que o método é estático (não depende de instância da classe)
@@ -151,8 +178,7 @@ abstract class Model {
             }
             $query .= " WHERE $where";
             $stmt = self::$conn->prepare($query);
-            $result = $stmt->execute();
-            return(["ok" => $result]);
+            return $stmt->execute();
         } catch (\Throwable $th) {
             //throw $th;
             return(["ok" => false, "message" => $th->getMessage(), "line" => $th->getLine()] );
@@ -164,14 +190,13 @@ abstract class Model {
         // Exemplo: update("users", ["name", "email"], ["Durov", "xxxxx@xxxxxxxx"], ["id" => 1]);
     }
 
-    public function delete(string $table, string $where){
+    public static function delete(string $table, string $where){
         // Example: delete("users", "id = 1");
         try {
             self::getConn(); // Usar esse método estático para que a conexão seja feita, já que o método é estático (não depende de instância da classe)
             $query = "DELETE FROM $table WHERE $where";
             $stmt = self::$conn->prepare($query);
             $result = $stmt->execute();
-            // return (["ok" => $result]);
             return $result;
         } catch (\Throwable $th) {
             //throw $th;
