@@ -63,9 +63,9 @@ class Escritorio extends Model {
         );
     }
 
-    public function getEscritorioByCnpj($cnpj)
+    public static function getEscritorioByCnpj($cnpj)
     {
-        return $this->selectOne(
+        return self::selectOne(
             "escritorios",
             ["*"],
             // "cnpj = '$cnpj'"

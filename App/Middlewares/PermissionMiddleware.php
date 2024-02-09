@@ -46,6 +46,10 @@ class PermissionMiddleware {
         }
     }
 
+    public static function isUsuario() {
+        return !self::isAdmin() && !self::isEscritorio();
+    }
+
     public static function checkIsUsuario() {
         if (self::isEscritorio()) {
             echo json_encode(["message" => "Você não é um usuário comum!", "ok" => false]);

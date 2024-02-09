@@ -8,16 +8,16 @@ use function PHPSTORM_META\type;
 class Usuario extends Model
 {
     
-    public function criarUsuario($nome, $usuario, $senha, $cnpj_escritorio)
+    public static function criarUsuario($nome, $usuario, $senha_hash, $id_escritorio)
     {
-        $senha_hash = password_hash($senha, PASSWORD_DEFAULT);
-        return $this->insert(
+        self::getConn(); // Usar esse método estático para que a conexão seja feita, já que o método é estático (não depende de instância da classe)
+        return self::insert(
             "usuarios",
             [
-                "nome", "usuario", "senha", "cnpj_escritorio"
+                "nome", "usuario", "senha", "id_escritorio"
             ],
             [
-                $nome, $usuario, $senha_hash, $cnpj_escritorio
+                $nome, $usuario, $senha_hash, $id_escritorio
             ]
         );
     }
@@ -89,7 +89,7 @@ class Usuario extends Model
         );
     }
 
-    public function usuarioExiste($usuario)
+    public static function usuarioExiste($usuario)
     {
         $status = self::selectOne(
             "usuarios",
@@ -97,7 +97,7 @@ class Usuario extends Model
             // "usuario = '$usuario'"
             ["usuario" => $usuario]
         );
-        return $status['data'] != false;
+        return $status != false;
     }
 
     public static function checkLogin() {

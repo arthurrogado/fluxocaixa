@@ -20,7 +20,7 @@ class Usuarios extends Action {
 
     public function visualizar()
     {
-        PermissionMiddleware::checkIsAdminOrEscritorio();
+        // PermissionMiddleware::checkIsAdminOrEscritorio();
         $this->render("visualizar");
     }
 

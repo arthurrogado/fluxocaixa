@@ -5,6 +5,7 @@ namespace MF\Model;
 use App\Config\Config;
 use App\Connection;
 use MF\Controller\MyAppException;
+use Throwable;
 
 abstract class Model {
 
@@ -38,9 +39,9 @@ abstract class Model {
 
     // Métodos genéricos para CRUD
 
-    public static function insert(string $table, array $columns, array $values) : array {
+    public static function insert(string $table, array $columns, array $values) : int {
         try {
-            // self::getConn();
+            self::getConn(); // Usar esse método estático para que a conexão seja feita, já que o método é estático (não depende de instância da classe)
     
             $preparedValues = array_map(function($value) {
                 return ($value !== null) ? "'$value'" : 'NULL';
@@ -53,9 +54,11 @@ abstract class Model {
             $result = $stmt->execute();
             // retonar o id do registro inserido
             $id = self::$conn->lastInsertId();
-            return (["ok" => $result, "id" => $id]);
+            // return (["ok" => $result, "id" => $id]);
+            return $id;
         } catch (\Throwable $th) {
-            return (["ok" => false, "message" => $th->getMessage(), "line" => $th->getLine()]);
+            // return (["ok" => false, "message" => $th->getMessage(), "line" => $th->getLine()]);
+            throw new MyAppException("Erro ao inserir registro: ", $th);
         }
     }
     
@@ -64,7 +67,8 @@ abstract class Model {
 
         // Example: select("users", ["name", "email"], "id = 1");
         try {
-            // self::getConn();
+            self::getConn(); // Usar esse método estático para que a conexão seja feita, já que o método é estático (não depende de instância da classe)
+
             $query = "SELECT ".implode(", ", $columns)." FROM $table";
             if($where){
                 $query .= " WHERE $where";
@@ -72,42 +76,20 @@ abstract class Model {
             $stmt = self::$conn->prepare($query);
             $stmt->execute();
             $result = $stmt->fetchAll(\PDO::FETCH_OBJ);
-            return ["ok" => true, "data" => $result];
+            // return ["ok" => true, "data" => $result];
+            return $result;
         } catch (\Throwable $th) {
             //throw $th;
-            return ["ok" => false, "message" => $th->getMessage(), "line" => $th->getLine()];
+            // return ["ok" => false, "message" => $th->getMessage(), "line" => $th->getLine()];
+            throw new MyAppException("Erro ao selecionar registro:", $th);
         }
-    }
-
-    public static function selectOne1(string $table, array $columns, string $where = null) {
-
-        // Example: select("users", ["name", "email"], "id = 1");
-        // try {
-            // self::getConn();
-            $query = "SELECT ".implode(", ", $columns)." FROM $table";
-            if($where){
-                $query .= " WHERE $where";
-            }
-
-            $stmt = self::$conn->prepare($query);
-            $stmt->execute();
-            $result = $stmt->fetch(\PDO::FETCH_OBJ);
-
-            if(!$result) throw new MyAppException("Erro: registro não encontrado.");
-            return $result;
-
-            // if(!$result) return ["ok" => false, "message" => "Registro não encontrado"];
-            // return ["ok" => true, "data" => $result];
-        // } catch (\Throwable $th) {
-        //     //throw $th;
-        //     throw new MyAppException("Erro ao selecionar registro: " . $th->getMessage());
-        //     // return ["ok" => false, "message" => $th->getMessage(), "line" => $th->getLine(), "file" => $th->getFile()];
-        // }
     }
 
     public static function selectOne(string $table, array $columns, array $where = [])
     {
         try {
+            self::getConn(); // Usar esse método estático para que a conexão seja feita, já que o método é estático (não depende de instância da classe)
+
             $query = "SELECT " . implode(", ", $columns) . " FROM $table";
             if ($where) {
                 // Usar bindValue no where
@@ -130,10 +112,10 @@ abstract class Model {
             $stmt->execute();
             $result = $stmt->fetch(\PDO::FETCH_OBJ);
     
-            if (!$result) throw new MyAppException("Erro: registro não encontrado.");
+            // if (!$result) throw new MyAppException("Erro: registro não encontrado."); // Não usar exceção na camada de modelo, isso é responsabilidade do controller
             return $result;
         } catch (\Throwable $th) {
-            throw new MyAppException("Erro ao selecionar registro: " . $th->getMessage());
+            throw new MyAppException("Erro ao selecionar registro: " . $th->getMessage() . " | line: " . $th->getLine() . " | " . $th->getFile());
         }
     }
 
@@ -158,7 +140,8 @@ abstract class Model {
     public function update(string $table, array $columns, array $values, string $where){
         // Example: update("users", ["name", "email"], ["Durov", "durov@telegram"], "id = 1");
         try {
-            // self::getConn();
+            self::getConn(); // Usar esse método estático para que a conexão seja feita, já que o método é estático (não depende de instância da classe)
+
             $query = "UPDATE $table SET ";
             for ($i=0; $i < count($columns); $i++) { 
                 $query .= "$columns[$i] = '$values[$i]' ";
@@ -176,14 +159,20 @@ abstract class Model {
         }
     }
 
+    public static function update2(string $table, array $columns, array $values, array $where) {
+        // Usar bind value para evitar SQL injection
+        // Exemplo: update("users", ["name", "email"], ["Durov", "xxxxx@xxxxxxxx"], ["id" => 1]);
+    }
+
     public function delete(string $table, string $where){
         // Example: delete("users", "id = 1");
         try {
-            // self::getConn();
+            self::getConn(); // Usar esse método estático para que a conexão seja feita, já que o método é estático (não depende de instância da classe)
             $query = "DELETE FROM $table WHERE $where";
             $stmt = self::$conn->prepare($query);
             $result = $stmt->execute();
-            return (["ok" => $result]);
+            // return (["ok" => $result]);
+            return $result;
         } catch (\Throwable $th) {
             //throw $th;
             return (["ok" => false, "message" => $th->getMessage(), "line" => $th->getLine()]);
