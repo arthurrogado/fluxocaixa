@@ -10,28 +10,25 @@ class EscritoriosController {
 
     public function criarEscritorio()
     {
-        PermissionMiddleware::checkIsAdmin();
+        PermissionMiddleware::checkIsAdmin(); // Somente o ADMIN MASTER pode criar escritórios
 
         $nome = filter_input(INPUT_POST, "nome", FILTER_DEFAULT);
         $cnpj = filter_input(INPUT_POST, 'cnpj');
         $observacoes = filter_input(INPUT_POST, 'observacoes');
-
-        $escritorio = new Escritorio();
         
-        $status = $escritorio->criarEscritorio($nome, $cnpj, $observacoes);
-        if($status['ok']) {
+        $status = Escritorio::criarEscritorio($nome, $cnpj, $observacoes);
+        if($status) {
             echo json_encode(array('ok' => true, 'message' => "Escritório criado com sucesso"));
         } else {
-            echo json_encode(array('ok' => false, 'message' => "Erro: " . $status['message'] ));
+            new MyAppException("Erro ao criar escritório");
         }
     }
 
     public function getEscritorios()
     {
         
-        // $escritorio = new Escritorio();
         if(PermissionMiddleware::isAdmin()){
-            $escritorio = Escritorio::getEscritorios();
+            $escritorio = Escritorio::getEscritorios(); // Admin pega todos os escritórios
         } else if(PermissionMiddleware::isEscritorio()){
             $id_escritorio = Usuario::checkLogin()->id; // Pegar o ID do escritório logado
             $escritorio = Escritorio::getEscritorioInArray($id_escritorio); // Pegar em array pois será iterado no front
@@ -56,8 +53,7 @@ class EscritoriosController {
         PermissionMiddleware::checkConditions(["id" => $id]); // Verifica se o usuário logado é o próprio escritório
         // Não tem perigo de checar o id de um usuário comum
 
-        $escritorio = new Escritorio();
-        $escritorio = $escritorio->visualizarEscritorio($id);
+        $escritorio = Escritorio::visualizarEscritorio($id);
 
         echo json_encode(array('ok' => true, 'escritorio' => $escritorio));
 
@@ -81,17 +77,15 @@ class EscritoriosController {
             $cnpj = Usuario::checkLogin()->cnpj;
         }
 
-
         $nome = filter_input(INPUT_POST, "nome", FILTER_DEFAULT);
         $observacoes = filter_input(INPUT_POST, 'observacoes');
 
-        $escritorio = new Escritorio();
         
-        $status = $escritorio->editarEscritorio($id, $nome, $cnpj, $observacoes);
-        if($status['ok']) {
+        $status = Escritorio::editarEscritorio($id, $nome, $cnpj, $observacoes);
+        if($status) {
             echo json_encode(array('ok' => true, 'message' => "Escritório editado com sucesso"));
         } else {
-            echo json_encode(array('ok' => false, 'message' => "Erro: " . $status['message'] ));
+            throw new MyAppException("Erro ao editar escritório");
         }
     }
 
@@ -103,13 +97,11 @@ class EscritoriosController {
         $id = filter_input(INPUT_POST, 'id');
         $escritorio = new Escritorio();
         $status = $escritorio->excluirEscritorio($id);
-        if($status['ok']) {
+        if($status) {
             echo json_encode(array('ok' => true, 'message' => "Escritório excluído com sucesso"));
         } else {
-            echo json_encode(array('ok' => false, 'message' => "Erro: " . $status['message'] ));
+            throw new MyAppException("Erro ao excluir escritório");
         }
     }
 
 }
-
-?>

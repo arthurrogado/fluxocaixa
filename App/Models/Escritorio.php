@@ -5,9 +5,9 @@ use MF\Model\Model;
 
 class Escritorio extends Model {
 
-    public function criarEscritorio($nome, $cnpj, $observacoes)
+    public static function criarEscritorio($nome, $cnpj, $observacoes)
     {
-        return $this->insert(
+        return self::insert(
             "escritorios",
             [
                 "nome", "cnpj", "observacoes"
@@ -31,14 +31,13 @@ class Escritorio extends Model {
         return self::selectOne(
             "escritorios",
             ["*"],
-            // "id = $id"
             ["id" => $id]
         );
     }
 
-    public function editarEscritorio($id, $nome, $cnpj, $observacoes)
+    public static function editarEscritorio($id, $nome, $cnpj, $observacoes)
     {
-        return $this->update(
+        return self::update(
             "escritorios",
             ["nome", "cnpj", "observacoes"],
             [$nome, $cnpj, $observacoes],
@@ -46,9 +45,9 @@ class Escritorio extends Model {
         );
     }
 
-    public function excluirEscritorio($id)
+    public static function excluirEscritorio($id)
     {
-        return $this->delete(
+        return self::delete(
             "escritorios",
             "id = $id"
         );
@@ -59,7 +58,6 @@ class Escritorio extends Model {
         return self::select(
             "escritorios",
             ["*"],
-            // "id = $id"
             ["id" => $id]
         );
     }
@@ -69,11 +67,8 @@ class Escritorio extends Model {
         return self::selectOne(
             "escritorios",
             ["*"],
-            // "cnpj = '$cnpj'"
             ["cnpj" => $cnpj]
         );
     }
 
 }
-
-?>

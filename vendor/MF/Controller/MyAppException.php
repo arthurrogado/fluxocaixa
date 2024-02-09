@@ -22,5 +22,3 @@ class MyAppException extends \Exception {
     }
 
 }
-
-?>
