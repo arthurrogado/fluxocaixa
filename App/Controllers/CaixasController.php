@@ -5,6 +5,7 @@ use App\Middlewares\PermissionMiddleware;
 use App\Models\Caixa;
 use App\Models\Operacao;
 use App\Models\Usuario;
+use MF\Controller\MyAppException;
 
 class CaixasController
 {
@@ -42,25 +43,19 @@ class CaixasController
 
         $id = filter_input(INPUT_POST, 'id');
 
-        $class_caixa = new Caixa();
-        $status = $class_caixa->visualizarCaixa($id);
-        if(!$status['ok']) {
-            echo json_encode(array('ok' => false, 'message' => "Erro: " . $status['message'] ));
-            exit;
-        }
-        $caixa = $status['data'];
+        $caixa = Caixa::visualizarCaixa($id);
+        if(!$caixa) throw new MyAppException("Uai, não achei esse caixa! Tenta recomeçar.");
         
         PermissionMiddleware::checkConditions(["id_escritorio" => $caixa->id_escritorio]);
 
         $nome = filter_input(INPUT_POST, 'nome');
         $observacoes = filter_input(INPUT_POST, 'observacoes');
 
-        $caixa = new Caixa();
-        $status = $caixa->editarCaixa($id, $nome, $observacoes);
-        if($status['ok']) {
+        $status = Caixa::editarCaixa($id, $nome, $observacoes);
+        if($status) {
             echo json_encode(array('ok' => true, 'message' => "Caixa editado com sucesso"));
         } else {
-            echo json_encode(array('ok' => false, 'message' => "Erro: " . $status['message'] ));
+            throw new MyAppException("Erro ao editar caixa.");
         }
     }
     
@@ -73,12 +68,11 @@ class CaixasController
         $id_escritorio = $usuario_atual->id_escritorio;
         
         // $caixa = Container::getModel('Caixa');
-        $caixa = new Caixa();
-        $status = $caixa->getCaixas($id_escritorio);
-        if($status['ok']) {
-            echo json_encode(array('ok' => true, 'caixas' => $status['data']));
+        $status = Caixa::getCaixas($id_escritorio);
+        if($status) {
+            echo json_encode(array('ok' => true, 'caixas' => $status));
         } else {
-            echo json_encode(array('ok' => false, 'message' => "Erro: " . $status['message'] ));
+            throw new MyAppException("Erro ao listar caixas.");
         }
         
     }
@@ -93,12 +87,8 @@ class CaixasController
         $caixa = new Caixa();
 
         // Verificar se o caixa (id) tem o mesmo escritório do usuário logado
-        $status = $caixa->visualizarCaixa($id);
-        if(!$status['ok']) {
-            echo json_encode(array('ok' => false, 'message' => "Erro: " . $status['message'] ));
-            exit;
-        }
-        $caixa = $status['data'];
+        $caixa = Caixa::visualizarCaixa($id);
+        if(!$caixa) throw new MyAppException("Erro ao visualizar.");
         PermissionMiddleware::checkConditions(["id_escritorio" => $caixa->id_escritorio]);
 
         $sql = "SELECT 

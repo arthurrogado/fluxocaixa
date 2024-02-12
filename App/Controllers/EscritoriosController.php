@@ -15,6 +15,10 @@ class EscritoriosController {
         $nome = filter_input(INPUT_POST, "nome", FILTER_DEFAULT);
         $cnpj = filter_input(INPUT_POST, 'cnpj');
         $observacoes = filter_input(INPUT_POST, 'observacoes');
+
+        // Verificar se o cnpj já existe
+        if(Escritorio::existeCnpj($cnpj)) throw new MyAppException("CNPJ já cadastrado!");
+        if(strlen($cnpj) != 14) throw new MyAppException("CNPJ inválido! Deve ter 14 dígitos.");
         
         $status = Escritorio::criarEscritorio($nome, $cnpj, $observacoes);
         if($status) {
@@ -54,7 +58,10 @@ class EscritoriosController {
         // Não tem perigo de checar o id de um usuário comum
 
         $escritorio = Escritorio::visualizarEscritorio($id);
-
+        if(!$escritorio) {
+            throw new MyAppException("Erro ao buscar escritório. Verifique se o ID está correto.");
+        }
+        unset($escritorio->senha); // Não enviar a senha para o front
         echo json_encode(array('ok' => true, 'escritorio' => $escritorio));
 
     }

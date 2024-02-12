@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <style>
+        .container {
+            width: 100%;
+            height: 100vh;
+            background-color: #ffffff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .customradio {
+            display: flex;
+            flex-wrap: wrap;
+        }
+        .customradio label {
+            background-color: #cfcfcf;
+            display: block;
+            padding: 10px 20px;
+            cursor: pointer;
+            position: relative;
+            text-align: center;
+            transition: .2s;
+        }
+        .customradio label[for="entrada"] {
+            border-radius: 100px 0 0 100px;
+        }
+        .customradio label[for="saida"] {
+            border-radius: 0 100px 100px 0;
+        }
+        .customradio input:checked + label[for="entrada"] {
+            background-color: #0b0069;
+            color: #fff;
+        }
+        .customradio input:checked + label[for="saida"] {
+            background-color: #680000;
+            color: #fff;
+        }
+        .customradio input {
+            display: none;
+        }
+
+        @media (max-width: 400px) {
+            .customradio label {
+                width: 100%;
+                padding: 1rem 0;
+            }
+            .customradio label[for="entrada"] {
+                border-radius: 100px 100px 0 0;
+            }
+            .customradio label[for="saida"] {
+                border-radius: 0 0 100px 100px;
+            }
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="customradio">
+            <input type="radio" id="entrada" value="entrad" name="tipo" checked>
+            <label for="entrada"> <i class="fa fa-arrow-up w3-text-blue"></i> Entrada</label>
+            <input type="radio" id="saida" value="saida" name="tipo">
+            <label for="saida"> <div class="fa fa-arrow-down w3-text-red"></div> Saída</label>
+        </div>
+    </div>
+    
+</body>
+</html>

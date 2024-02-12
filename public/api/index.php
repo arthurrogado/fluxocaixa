@@ -13,7 +13,7 @@
         $route = new \App\Route;
     } catch (\Throwable $th) {
         //throw $th;
-        echo json_encode(["ok" => false, "message" => "ERRO NA APLICAÇÃO:" . $th->getMessage(), "line" => $th->getLine(), "file" => $th->getFile()]);
+        echo json_encode(["ok" => false, "message" => "ERRO NA APLICAÇÃO: " . $th->getMessage(), "line" => $th->getLine(), "file" => $th->getFile()]);
     }
 
 

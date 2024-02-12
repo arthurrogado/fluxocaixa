@@ -1,0 +1,43 @@
+.customradio {
+    display: flex;
+    flex-wrap: wrap;
+}
+.customradio label {
+    background-color: #cfcfcf;
+    display: block;
+    padding: 10px 20px;
+    cursor: pointer;
+    position: relative;
+    text-align: center;
+    transition: .2s;
+}
+.customradio label[for="entrada"] {
+    border-radius: 100px 0 0 100px;
+}
+.customradio label[for="saida"] {
+    border-radius: 0 100px 100px 0;
+}
+.customradio input:checked + label[for="entrada"] {
+    background-color: #0b0069;
+    color: #fff;
+}
+.customradio input:checked + label[for="saida"] {
+    background-color: #680000;
+    color: #fff;
+}
+.customradio input {
+    display: none;
+}
+
+@media (max-width: 468px) {
+    .customradio label {
+        width: 100%;
+        padding: 1rem 0;
+    }
+    .customradio label[for="entrada"] {
+        border-radius: 100px 100px 0 0;
+    }
+    .customradio label[for="saida"] {
+        border-radius: 0 0 100px 100px;
+    }
+}

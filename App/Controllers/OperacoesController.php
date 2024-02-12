@@ -6,6 +6,7 @@ use App\Models\Caixa;
 use App\Models\Carteira;
 use App\Models\Operacao;
 use App\Models\Usuario;
+use MF\Controller\MyAppException;
 
 class OperacoesController
 {
@@ -24,25 +25,14 @@ class OperacoesController
 
         // Verificar se o caixa (id_caixa) tem o mesmo escritório do usuário logado
         $classCaixa = new Caixa();
-        $status = $classCaixa->visualizarCaixa($id_caixa);
-        if(!$status['ok']) {
-            echo json_encode(array('ok' => false, 'message' => "Erro: " . $status['message'] ));
-            exit;
-        }
-        $caixa = $status['data'];
-        if($caixa->id_escritorio != Usuario::checkLogin()->id_escritorio) {
-            echo json_encode(array('ok' => false, 'message' => "Você não tem permissão para visualizar operações desse caixa. Você é de outro escritório."));
-            exit;
-        }
+        $caixa = Caixa::visualizarCaixa($id_caixa);
+        if(!$caixa) throw new MyAppException("Erro: ao buscar caixa.");
+        
+        if($caixa->id_escritorio != Usuario::checkLogin()->id_escritorio) throw new MyAppException("Você não tem permissão para visualizar operações desse caixa. Você é de outro escritório.");
 
-        $classOperacao = new Operacao();
-        $status = $classOperacao->getOperacoesCaixa($id_caixa);
-        if(!$status['ok']) {
-            echo json_encode(array('ok' => false, 'message' => "Erro: " . $status['message'] ));
-            return;
-        }
+        $operacoes = Operacao::getOperacoesCaixa($id_caixa);
+        // if(!$operacoes) throw new MyAppException("Operações não encontradas.");
 
-        $operacoes = $status['data'];
         $soma_entradas = 0;
         $soma_saidas = 0;
         foreach($operacoes as $operacao) {
@@ -54,6 +44,7 @@ class OperacoesController
             }
             // Agrupa os valores de entrada para Dinheiro, Cartão, PIX, etc
         }
+
         echo json_encode(array('ok' => true, 'operacoes' => $operacoes, 'soma_entradas' => $soma_entradas, 'soma_saidas' => $soma_saidas));
     }
 
@@ -63,13 +54,10 @@ class OperacoesController
         // se permite saída, verificar se o tipo de entrada é 0 (saída)
         // se não permite entrada nem saída, retornar erro
         // se permite entrada e saída, não verificar o tipo de entrada
-        $classCarteira = new Carteira();
-        $status = $classCarteira->getCarteira($id_carteira);
-        if(!$status['ok']) {
-            echo json_encode(array('ok' => false, 'message' => "Erro: " . $status['message'] ));
-            exit;
-        }
-        $carteira = $status['data'];
+
+        $carteira = Carteira::getCarteira($id_carteira);
+        if(!$carteira) throw new MyAppException("Não encontrei a carteira de id '$id_carteira'.");
+
         if($carteira->entrada == '0' && $carteira->saida == '0') {
             echo json_encode(array('ok' => false, 'message' => "Essa carteira não permite entrada nem saída"));
             exit;
@@ -79,7 +67,7 @@ class OperacoesController
         } else if($carteira->saida == '0' && $tipo_operacao == 's') {
             echo json_encode(array('ok' => false, 'message' => "Essa carteira não permite saída"));
             exit;
-        }        
+        }
     }
 
     public function criarOperacao()
@@ -99,27 +87,25 @@ class OperacoesController
         $id_usuario = Usuario::checkLogin()->id;
 
         // Verificar se o caixa (id_caixa) tem o mesmo escritório do usuário logado
-        $classCaixa = new Caixa();
-        $status = $classCaixa->visualizarCaixa($id_caixa);
-        if(!$status['ok']) {
-            echo json_encode(array('ok' => false, 'message' => "Erro: " . $status['message'] ));
-            exit;
-        }
-        $caixa = $status['data'];
-        if($caixa->id_escritorio != Usuario::checkLogin()->id_escritorio) {
-            echo json_encode(array('ok' => false, 'message' => "Você não tem permissão para criar operações nesse caixa. Você é de outro escritório."));
-            exit;
-        }
+        $caixa = Caixa::visualizarCaixa($id_caixa);
+        if(!$caixa) throw new MyAppException("Não encontrei o caixa de id '$id_caixa'.");
+        PermissionMiddleware::checkConditions(["id_escritorio" => $caixa->id_escritorio], "Você não tem permissão para criar operações nesse caixa. Você é de outro escritório.");
 
         // Verifica se a carteira permite entrada ou saída
         $this->verificarEntradaSaidaCarteira($id_carteira, $tipo);
 
-        $operacao = new Operacao();
-        $status = $operacao->criarOperacao($nome, $observacoes, $valor, $id_caixa, $id_usuario, $data, $tipo, $id_carteira);
-        if($status['ok']) {
+        // Verificar se a id_carteira pertence ao escritório do usuário logado ou se é universal (id_escritorio = NULL)
+        $carteira = Carteira::getCarteira($id_carteira);
+        if(!$carteira) throw new MyAppException("Não encontrei a carteira de id '$id_carteira'.");
+        if($carteira->id_escritorio != Usuario::checkLogin()->id_escritorio && $carteira->id_escritorio != NULL) {
+            throw new MyAppException("Você não tem permissão para criar operações nessa carteira. Você é de outro escritório ou essa carteira não é universal.");
+        }
+
+        $status = Operacao::criarOperacao($nome, $observacoes, $valor, $id_caixa, $id_usuario, $data, $tipo, $id_carteira);
+        if($status) {
             echo json_encode(array('ok' => true, 'message' => "Operação criada com sucesso"));
         } else {
-            echo json_encode(array('ok' => false, 'message' => "Erro: " . $status['message'] ));
+            throw new MyAppException("Erro ao criar operação.");
         }
 
     }
@@ -131,58 +117,28 @@ class OperacoesController
         PermissionMiddleware::checkPermissions('editarOperacao');
 
         $id = $this->getPost('id');
+        $tipo = $this->getPost('tipo');
         $nome = $this->getPost('nome');
         $observacoes = $this->getPost('observacoes');
         $valor = $this->getPost('valor');
         $data = $this->getPost('data');
         $id_carteira = $this->getPost('id_carteira');
 
-
-
-        
         // Verificar se o caixa da operação (id) tem o mesmo escritório do usuário logado
-        $classOperacao = new Operacao();
-        $status = $classOperacao->getOperacao($id);
-        if(!$status['ok']) {
-            echo json_encode(array('ok' => false, 'message' => "Erro: " . $status['message'] ));
-            exit;
-        }
-        $operacao = $status['data'];
-        $id_caixa = $operacao->id_caixa;
-        $classCaixa = new Caixa();
-        $status = $classCaixa->visualizarCaixa($id_caixa);
-        if(!$status['ok']) {
-            echo json_encode(array('ok' => false, 'message' => "Erro: " . $status['message'] ));
-            exit;
-        }
-        $caixa = $status['data'];
-        if($caixa->id_escritorio != Usuario::checkLogin()->id_escritorio) {
-            echo json_encode(array('ok' => false, 'message' => "Você não tem permissão para editar operações desse caixa. Você é de outro escritório."));
-            exit;
-        }
+        $operacao = Operacao::getOperacao($id);
+        if(!$operacao) throw new MyAppException("Não achei essa operação de id '$id'.");
+        $caixa = Caixa::visualizarCaixa($operacao->id_caixa);
+        if(!$caixa) throw new MyAppException("Erro ao procurar pelo caixa da operação.");
+        PermissionMiddleware::checkConditions(["id_escritorio" => $caixa->id_escritorio], "Você não tem permissão para editar operações desse caixa. Você é de outro escritório.");
 
-
-
-
-
-        // Verificar se a nova carteira permite entrada ou saída
-        $classOperacao = new Operacao();
-        $status = $classOperacao->getOperacao($id);
-        if(!$status['ok']) {
-            echo json_encode(array('ok' => false, 'message' => "Erro: " . $status['message'] ));
-            exit;
-        }
-        $operacao = $status['data'];
-        $tipo = $operacao->tipo;
+        // Verificar se a carteira permite entrada ou saída do novo tipo da operação  
         $this->verificarEntradaSaidaCarteira($id_carteira, $tipo);
         
-
-        $operacao = new Operacao();
-        $status = $operacao->editarOperacao($id, $nome, $valor, $observacoes, $data, $id_carteira);
-        if($status['ok']) {
+        $status = Operacao::editarOperacao($id, $nome, $valor, $observacoes, $data, $tipo, $id_carteira);
+        if($status) {
             echo json_encode(array('ok' => true, 'message' => "Operação editada com sucesso"));
         } else {
-            echo json_encode(array('ok' => false, 'message' => "Erro: " . $status['message'] ));
+            throw new MyAppException("Erro ao editar operação.");
         }
     }
 
@@ -194,12 +150,11 @@ class OperacoesController
 
         $id = $this->getPost('id');
 
-        $operacao = new Operacao();
-        $status = $operacao->excluirOperacao($id);
-        if($status['ok']) {
+        $status = Operacao::excluirOperacao($id);
+        if($status) {
             echo json_encode(array('ok' => true, 'message' => "Operação excluída com sucesso"));
         } else {
-            echo json_encode(array('ok' => false, 'message' => "Erro: " . $status['message'] ));
+            throw new MyAppException("Erro ao excluir operação.");
         }
     }
 

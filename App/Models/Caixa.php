@@ -19,28 +19,27 @@ class Caixa extends Model
         );
     }
 
-    public function getCaixas($id_escritorio)
+    public static function getCaixas($id_escritorio)
     {
-        return $this->select(
+        return self::select(
             "caixas",
             ["*"],
-            "id_escritorio = $id_escritorio"
+            ["id_escritorio" => $id_escritorio]
         );
     }
 
-    public function visualizarCaixa($id)
+    public static function visualizarCaixa($id)
     {
-        return $this->selectOne(
+        return self::selectOne(
             "caixas",
             ["*"],
-            // "id = $id"
             ["id" => $id]
         );
     }
 
-    public function editarCaixa($id, $nome, $observacoes)
+    public static function editarCaixa($id, $nome, $observacoes)
     {
-        return $this->update(
+        return self::update(
             "caixas",
             ["nome", "observacoes"],
             [$nome, $observacoes],
@@ -48,9 +47,9 @@ class Caixa extends Model
         );
     }
 
-    public function excluirCaixa($id)
+    public static function excluirCaixa($id)
     {
-        return $this->delete(
+        return self::delete(
             "caixas",
             "id = $id"
         );

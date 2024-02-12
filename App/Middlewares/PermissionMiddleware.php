@@ -3,6 +3,8 @@
 // PermissionMiddleware.php
 
 namespace App\Middlewares;
+
+use App\Models\Permissao;
 use App\Models\Usuario;
 use MF\Model\Container as ModelContainer;
 use MF\Models\Container;
@@ -59,7 +61,7 @@ class PermissionMiddleware {
 
     
 
-    public static function checkConditions($conditions) {
+    public static function checkConditions($conditions, $message = "Você não tem permissão! Não atende à condição necessária.") {
         
         # Exemplo de uso para verificar se o id_escritorio do usuario logado é igual ao id_escritorio da obra
         # (ou qualquer outro dado da sua regra de negócio)
@@ -78,7 +80,7 @@ class PermissionMiddleware {
 
         foreach ($conditions as $key => $value) {
             if($usuario->$key != $value) {
-                echo json_encode(["message" => "Você não tem permissão! Não atende à condição necessária!", "ok" => false]);
+                echo json_encode(["message" => $message, "ok" => false]);
                 exit();
             }
         }
@@ -103,8 +105,8 @@ class PermissionMiddleware {
         // Verificar se o usuário tem permissão para a ação.
         // Usar classe Model de Permissao para isso
 
-        $permissao = ModelContainer::getModel("Permissao");
-        $tem_permissao = $permissao->usuarioTemPermissao($current_user->id, $action);
+        // $permissao = ModelContainer::getModel("Permissao");
+        $tem_permissao = Permissao::usuarioTemPermissao($current_user->id, $action);
 
         if(!$tem_permissao) {
             echo json_encode(["message" => "Você não tem permissão!", "ok" => false]);

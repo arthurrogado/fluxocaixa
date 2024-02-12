@@ -63,12 +63,24 @@ abstract class Model {
     }
     
 
-    public static function select(string $table, array $columns, array $where = []) : array {
+    public static function select(string $table, array $columns, array $where = [], string $finals = '') : array {
         try {
             self::getConn();
     
             $query = "SELECT ".implode(", ", $columns)." FROM $table";
-    
+            
+            // Exemplo de um where composto:
+            // $where = [
+            //     "id" => 1,
+            //     "OR" => [
+            //         "nome" => "João",
+            //         "AND" => [
+            //             "idade" => [">" => 21],
+            //             "email" => "joao@example.com"
+            //         ]
+            //     ]
+            // ];
+
             if (!empty($where)) {
                 $query .= " WHERE ";
     
@@ -88,9 +100,12 @@ abstract class Model {
     
                 $query .= implode(" AND ", $conditions);
             }
+
+            $query .= " $finals"; // Use finais para adicionar ORDER BY, LIMIT, etc.
     
             $stmt = self::$conn->prepare($query);
-    
+            
+            // Usar bindValue no where para evitar SQL injection
             foreach ($where as $key => $value) {
                 if (is_array($value)) {
                     foreach ($value as $subkey => $subvalue) {
@@ -146,9 +161,9 @@ abstract class Model {
         }
     }
 
-    public function executeSelect(string $query, array $params = null) : array {
+    public static function executeSelect(string $query, array $params = null) : array {
         try {
-            // self::getConn();
+            self::getConn();
             $stmt = self::$conn->prepare($query);
             if($params){
                 foreach ($params as $key => $value) {
@@ -157,10 +172,9 @@ abstract class Model {
             }
             $stmt->execute();
             $result = $stmt->fetchAll(\PDO::FETCH_OBJ);
-            return ["ok" => true, "data" => $result];
+            return $result;
         } catch (\Throwable $th) {
-            //throw $th;
-            return ["ok" => false, "message" => $th->getMessage(), "line" => $th->getLine()];
+            throw new MyAppException("Erro ao executar seleção de dados", $th);
         }
     }
 

@@ -204,9 +204,10 @@ class HttpClient {
     }
 
     // Verificar os input-fields com * e retornar false se algum estiver vazio
-    verifyObrigatoryFields(msgbox = true) {
+    verifyObrigatoryFields(querySelectorForm = 'form', msgbox = true) {
         let result = true
-        document.querySelectorAll('.input-field label')
+        // document.querySelectorAll('.input-field label')
+        document.querySelectorAll(`${querySelectorForm} .input-field label`)
             .forEach(label => {
                 if (label.innerHTML.includes('*')) {
                     let ehVazio = label.parentElement.querySelector('input, select, textarea')?.value == ''

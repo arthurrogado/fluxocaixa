@@ -35,6 +35,15 @@ class Escritorio extends Model {
         );
     }
 
+    public static function existeCnpj($cnpj)
+    {
+        return self::selectOne(
+            "escritorios",
+            ["*"],
+            ["cnpj" => $cnpj]
+        ) != false;
+    }
+
     public static function editarEscritorio($id, $nome, $cnpj, $observacoes)
     {
         return self::update(

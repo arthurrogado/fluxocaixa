@@ -1,10 +1,11 @@
 import HttpClient from "/frontend/App.js";
-const httpClient = new HttpClient();
 import Table from "/frontend/components/Table.js";
 import Modal from "/frontend/components/Modal.js";
+import Info from "/frontend/components/InfoBox.js";
 
 class ListarEscritorios {
     constructor() {
+        this.httpClient = new HttpClient();
         this.init();
     }
 
@@ -22,11 +23,11 @@ class ListarEscritorios {
             <form id="formNovoEscritorio">
                 <div class="input-field">
                     <input type="text" name="nome" required>
-                    <label>Nome do escritório</label>
+                    <label>Nome do escritório*</label>
                 </div>
                 <div class="input-field">
-                    <input type="text" name="cnpj" required>
-                    <label>CNPJ</label>
+                    <input type="text" name="cnpj" max='14' required>
+                    <label>CNPJ*</label>
                 </div>
                 <div class="input-field">
                     <textarea name="observacoes" cols="30" rows="5" required></textarea>
@@ -42,9 +43,10 @@ class ListarEscritorios {
                 {
                     text: "Salvar",
                     action: () => {
+                        if(!this.httpClient.verifyObrigatoryFields("#formNovoEscritorio")) return;
                         const form = document.querySelector("#formNovoEscritorio");
                         const formdata = new FormData(form);
-                        httpClient.makeRequest("/api/escritorios/criar", formdata)
+                        this.httpClient.makeRequest("/api/escritorios/criar", formdata)
                             .then((response) => {
                                 if (response.ok) {
                                     modalNovoEscritorio.close();
@@ -58,7 +60,7 @@ class ListarEscritorios {
     }
 
     obterEscritorios() {
-        httpClient.makeRequest("/api/escritorios/listar").then((response) => {
+        this.httpClient.makeRequest("/api/escritorios/listar").then((response) => {
             if (response.ok) {
                 this.renderEscritorios(response.escritorios);
             }
@@ -76,13 +78,13 @@ class ListarEscritorios {
                 {
                     text: '<i class="fa fa-eye"></i>',
                     action: (id) => {
-                        httpClient.navigateTo('/escritorio/visualizar', {id: id})
+                        this.httpClient.navigateTo('/escritorio/visualizar', {id: id})
                     }
                 },
                 {
                     text: '<i class="fa fa-trash"></i>',
                     action: (id) => {
-                        this.excluirEscritorio(id)
+                        this.confirmarExclusao(id)
                     },
                     class: "btn-danger"
                 }
@@ -90,10 +92,8 @@ class ListarEscritorios {
         )
     }
 
-    // Anotações: todo registro tem que ter um campo ID em PK e Autoincrement.
-
-    excluirEscritorio(id) {
-        const modalExcluir = new Modal('body', 'Excluir escritório?', /*html*/`
+    confirmarExclusao(id) {
+        this.modalConfirmarExclusao = new Modal('body', 'Excluir escritório?', /*html*/`
             <p>Deseja realmente excluir este escritório?</p>
         `, [
             {
@@ -102,15 +102,35 @@ class ListarEscritorios {
             {
                 text: "Sim",
                 action: () => {
-                    httpClient.makeRequest("/api/escritorios/excluir", {id: id})
+                    this.excluirEscritorio(id);
+                },
+                class: "btn-danger"
+            }
+        ])
+    }
+
+    // Anotações: todo registro tem que ter um campo ID em PK e Autoincrement.
+
+    excluirEscritorio(id) {
+        const modalExcluir = new Modal('body', 'Excluir escritório?', /*html*/`
+            <p>Deseja REALMENTE excluir este escritório????</p>
+        `, [
+            {
+                text: "Sim",
+                action: () => {
+                    this.httpClient.makeRequest("/api/escritorios/excluir", {id: id})
                         .then(response => {
                             if (response.ok) {
                                 modalExcluir.close();
+                                this.modalConfirmarExclusao.close();
                                 this.obterEscritorios();
                             }
                         })
                 },
                 class: "btn-danger"
+            },
+            {
+                text: "Não"
             }
         ])
     }

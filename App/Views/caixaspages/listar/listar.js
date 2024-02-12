@@ -14,7 +14,6 @@ class ListarCaixas {
             this.abrirModalCriarCaixa();
         })
         // let loading_caixas = this.httpClient.loading('#caixas');
-        // console.log(loading_caixas);
     }
 
     abrirModalExcluirCaixa(id) {
@@ -48,7 +47,6 @@ class ListarCaixas {
     obterCaixas() {
         this.httpClient.makeRequest('/api/caixas/listar')
         .then(response => {
-            console.log(response);
             if(response.ok) {
                 document.querySelector('#loadingTabelaCaixas')?.remove();
                 document.querySelector('#caixas').innerHTML = '';

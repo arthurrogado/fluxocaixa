@@ -107,9 +107,9 @@ class Modal extends _Component {
         let h3 = document.createElement('h3');
         h3.innerHTML = this.title;
 
-        let button = document.createElement('button');
-        button.innerHTML = /*html*/`<i class="fa fa-times"></i>`;
-        button.addEventListener('click', () => {
+        let close_button = document.createElement('button');
+        close_button.innerHTML = /*html*/`<i class="fa fa-times"></i>`;
+        close_button.addEventListener('click', () => {
             if(this.restrict_close) {
                 if(!confirm('Deseja fechar o modal?')) return;
             }
@@ -117,7 +117,7 @@ class Modal extends _Component {
         });
 
         header.append(h3);
-        header.append(button);
+        header.append(close_button);
         
         let contentDiv = document.createElement('div');
         contentDiv.classList.add('content');
@@ -163,14 +163,7 @@ class Modal extends _Component {
         // })
 
         // Fechar modal com ESC
-        document.addEventListener('keydown', (event) => {
-            if (event.key == 'Escape') {
-                if(this.restrict_close) {
-                    if(confirm("Deseja fechar essa caixa?")) this.close();
-                }
-            }
-            this.restrict_close = true;
-        });
+        document.addEventListener('keydown', this.esc_close.bind(this));
 
         // Fechar modal clicando fora (no elemento modal)
         this.element.addEventListener('click', (event) => {
@@ -183,6 +176,15 @@ class Modal extends _Component {
 
     }
 
+    esc_close(event) {
+        if (event.key == 'Escape') {
+            if(this.restrict_close) {
+                if(!confirm("Deseja fechar essa caixa?")) return
+            }
+            this.close();
+        }
+    }
+
     fecharTodosModais() {
         document.querySelectorAll('.box'+this.hash).forEach(box => {
             box.parentElement.remove();
@@ -191,6 +193,7 @@ class Modal extends _Component {
 
     close() {
         this.element.remove();
+        document.removeEventListener('keydown', this.esc_close);
     }
 
 }

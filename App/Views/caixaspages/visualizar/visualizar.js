@@ -20,7 +20,6 @@ class VisualizarCaixa {
     obterDadosCaixa() {
         this.httpClient.makeRequest('/api/caixas/visualizar', {id: this.httpClient.getParams().id})
         .then(response => {
-            console.log(response)
             if(response.ok) {
                 this.preencherCampos(response.caixa)
             }
@@ -159,13 +158,20 @@ class VisualizarCaixa {
                 <div class="input-field">
                     <select name="id_carteira">
                         <option value=""></option>
-                        ${this.carteiras.map(carteira => /*html*/`
-                            <option value="${carteira.id}">${carteira.nome}</option>
-                        `)}
-                        <!-- <option value="1">Dinheiro</option> -->
+                        ${this.carteiras.map(function(carteira) {
+                            return `<option value="${carteira.id}">${carteira.nome}</option>`
+                        })}
                     </select>
                     <label>Carteira:</label>
                 </div>
+
+                <div class="customradio">
+                    <input type="radio" name="tipo" value="e" id="entrada" ${entrada=='entrada' ? 'checked' : ''}>
+                    <label for="entrada"> <i class="fa fa-arrow-up w3-text-blue"></i> Entrada</label>
+                    <input type="radio" name="tipo" value="s" id="saida" ${entrada=='saida' ? 'checked' : ''}>
+                    <label for="saida"> <i class="fa fa-arrow-down w3-text-red"></i> Saída</label>
+                </div>
+                
             </form>
         `;
 
@@ -260,6 +266,9 @@ class VisualizarCaixa {
                 <p>
                     <b>Forma de pagamento:</b> ${nome_carteira}
                 </p>
+                <p>
+                    <b>Tipo:</b> ${operacao.tipo == 'e' ? ' <i class="fa fa-arrow-up w3-text-blue"></i> Entrada' : ' <i class="fa fa-arrow-down w3-text-red"></i> Saída'}
+                </p>
             </div>
         `;
 
@@ -294,6 +303,7 @@ class VisualizarCaixa {
     }
 
     async abrirEdicaoOperacao(operacao) {
+        // Abrir modal para editar a operação
         let conteudoModal = /*html*/`
             <form id="form_operacao" class="w3-container">
                 <div class="input-field">
@@ -315,17 +325,26 @@ class VisualizarCaixa {
                 <div class="input-field">
                     <select name="id_carteira" required>
                         <option value=""></option>
-                        ${this.carteiras.map(carteira => /*html*/`
-                            <option value="${carteira.id}" ${carteira.id == operacao.id_carteira ? 'selected' : ''}>${carteira.nome}</option>
-                        `)}
+                        ${this.carteiras.map(function(carteira){
+                            return "<option value='"+carteira.id+"' "+(carteira.id == operacao.id_carteira ? 'selected' : '')+">"+carteira.nome+"</option>"
+                        })}
                     </select>
                     <label>Carteira:</label>
                 </div>
+
+                <div class="customradio">
+                    <input type="radio" name="tipo" value="e" id="entrada" ${operacao.tipo == 'e' ? 'checked' : ''}>
+                    <label for="entrada"> <i class="fa fa-arrow-up w3-text-blue"></i> Entrada</label>
+                    <input type="radio" name="tipo" value="s" id="saida" ${operacao.tipo == 's' ? 'checked' : ''}>
+                    <label for="saida"> <i class="fa fa-arrow-down w3-text-red"></i> Saída</label>
+                </div>
+                
             </form>
             <div class="w3-small w3-margin-left">
                 Data de criação:
                 ${operacao.data_criacao}
             </div>
+            
         `;
 
         let botoesModal = [
@@ -338,6 +357,7 @@ class VisualizarCaixa {
 
                     this.httpClient.makeRequest('/api/operacoes/editar', formdata)
                     .then(response => {
+                        console.log(response)
                         if(response.ok) {
                             this.obterOperacoes();
                             this.modalEdicaoOperacao.close();
@@ -359,6 +379,7 @@ class VisualizarCaixa {
     }
 
     async abrirEdicaoCaixa() {
+        // Abrir o modal de edição
         let response = await this.httpClient.makeRequest('/api/caixas/visualizar', {id: this.httpClient.getParams().id})
         if(!response.ok) return;
 

@@ -7,21 +7,23 @@ class Permissao extends Model {
 
     public function getPermissao($id)
     {
-        $this->select(
+        return self::selectOne(
             "permissoes",
             ["*"],
-            "id = $id"
+            ["id" => $id]
         );
     }
 
-    public function usuarioTemPermissao($id_usuario, $acao)
+    public static function usuarioTemPermissao($id_usuario, $acao)
     {
-        $status = $this->select(
+        return true;
+        $status = self::select(
             "permissoes",
             ["*"],
-            "id_usuario = $id_usuario AND acao = '$acao'"
+            // "id_usuario = $id_usuario AND acao = '$acao'"
+            ["id_usuario" => $id_usuario, "acao" => $acao]
         );
-        return $status['ok'];
+        return $status;
     }
 
 }
