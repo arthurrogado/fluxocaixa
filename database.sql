@@ -41,11 +41,12 @@ CREATE TABLE IF NOT EXISTS `caixas` (
   CONSTRAINT `FK_caixas_escritorios` FOREIGN KEY (`id_escritorio`) REFERENCES `escritorios` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `FK_caixas_usuarios` FOREIGN KEY (`id_usuario_abertura`) REFERENCES `usuarios` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `FK_caixas_usuarios_2` FOREIGN KEY (`id_usuario_fechamento`) REFERENCES `usuarios` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=31 DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=33 DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
 INSERT INTO `caixas` (`id`, `nome`, `observacoes`, `id_escritorio`, `id_usuario_abertura`, `id_usuario_fechamento`, `data_abertura`, `data_fechamento`) VALUES
-	(25, 'Caixa principal', '- Deletar aquele boleto lá! \r\n- Tomar nota do aluno tal. aaaaaaaaaaaaaaaaaaaaaaaaaa ', 2, 34, NULL, '2024-01-18 15:27:46', NULL),
-	(30, 'Materiais', '', 2, 34, NULL, '2024-01-23 00:25:49', NULL);
+	(25, 'Caixa principal', '- Deletar aquele boleto lá! \r\n- Tomar nota do aluno tal. ', 2, 34, NULL, '2024-01-18 15:27:46', NULL),
+	(30, 'Materiais', '', 2, 34, NULL, '2024-01-23 00:25:49', NULL),
+	(32, 'Teste primeiro caixa', 'teste', 3, 33, NULL, '2024-02-05 16:54:24', NULL);
 
 CREATE TABLE IF NOT EXISTS `carteiras` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
@@ -87,14 +88,15 @@ CREATE TABLE IF NOT EXISTS `escritorios` (
   `nome` varchar(50) NOT NULL,
   `cnpj` varchar(14) NOT NULL,
   `observacoes` varchar(255) DEFAULT NULL,
+  `senha` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `cnpj` (`cnpj`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
-INSERT INTO `escritorios` (`id`, `nome`, `cnpj`, `observacoes`) VALUES
-	(1, '[ADMIN OFFICE]', '11111111111111', 'Escritório do admin master blaster'),
-	(2, 'CFC Jaguar', '09524929000194', 'Autoescola Jaguar de Uruaçu'),
-	(5, 'Jaguariúna', '22222222222222', '');
+INSERT INTO `escritorios` (`id`, `nome`, `cnpj`, `observacoes`, `senha`) VALUES
+	(1, '[ADMIN OFFICE]', '11111111111111', 'Escritório do admin master blaster', ''),
+	(2, 'CFC Jaguar', '09524929000194', 'Autoescola Jaguar de Uruaçu. A melhor!', '$2y$10$Mkwbpy93Udy6BONH5YlvhOzlKyUkrdS3XnzDsbVg85mUBV1i5ovBC'),
+	(3, 'CFC Jaguariúna 2', '45839641000172', 'A melhor autoescola do sul de Goiás!', '$2y$10$DQJN5F7WXwTi3OqT8jBh.eru1Pvg/vWb7R1GsQr8IJa7qK8E1BsqG');
 
 CREATE TABLE IF NOT EXISTS `operacoes` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
@@ -105,7 +107,6 @@ CREATE TABLE IF NOT EXISTS `operacoes` (
   `id_usuario` int(11) NOT NULL,
   `data` date NOT NULL,
   `data_criacao` datetime NOT NULL DEFAULT current_timestamp(),
-  `tipo_entrada` tinyint(1) NOT NULL COMMENT 'Se for 1, é entrada, se for 0 é saída.',
   `tipo` enum('e','s') DEFAULT NULL,
   `id_carteira` int(11) NOT NULL,
   `excluido` enum('1','0') NOT NULL DEFAULT '0',
@@ -116,24 +117,37 @@ CREATE TABLE IF NOT EXISTS `operacoes` (
   CONSTRAINT `FK__usuarios` FOREIGN KEY (`id_usuario`) REFERENCES `usuarios` (`id`) ON DELETE NO ACTION,
   CONSTRAINT `FK_operacoes_caixas` FOREIGN KEY (`id_caixa`) REFERENCES `caixas` (`id`) ON DELETE SET NULL ON UPDATE NO ACTION,
   CONSTRAINT `FK_operacoes_carteira` FOREIGN KEY (`id_carteira`) REFERENCES `carteiras` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=17 DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=30 DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
-INSERT INTO `operacoes` (`id`, `nome`, `observacoes`, `valor`, `id_caixa`, `id_usuario`, `data`, `data_criacao`, `tipo_entrada`, `tipo`, `id_carteira`, `excluido`) VALUES
-	(1, 'Curso teórico', '', 502, 25, 34, '2024-01-19', '2024-01-22 22:35:51', 0, 'e', 2, '0'),
-	(2, 'Abastecimento moto', 'Lá no posto tal', 30, 25, 34, '2024-01-22', '2024-01-22 22:51:20', 0, 's', 1, '0'),
-	(4, '', '', 0, 25, 34, '2024-01-23', '2024-01-22 23:00:17', 0, 'e', 3, '1'),
-	(5, 'teste', '', 12, 25, 34, '2024-01-23', '2024-01-22 23:14:17', 0, 'e', 3, '1'),
-	(6, 'KIT Completo', 'José dos Anzóis', 50, 30, 34, '2024-01-23', '2024-01-23 00:26:38', 0, 'e', 1, '0'),
-	(7, 'Abastecimento moto', '', 30, 30, 34, '2024-01-23', '2024-01-23 00:27:14', 0, 's', 1, '0'),
-	(8, 'Livrinho', 'Da dona Maria', 20, 30, 34, '2024-01-22', '2024-01-23 00:27:55', 0, 'e', 2, '0'),
-	(9, 'Teste', '', 100, 25, 34, '2024-01-23', '2024-01-23 00:41:09', 0, 'e', 1, '1'),
-	(10, 'teste', '', 80, 25, 34, '2024-01-23', '2024-01-23 01:33:44', 0, 'e', 1, '1'),
-	(11, '', '', 0, 25, 34, '2024-01-23', '2024-01-23 02:03:13', 0, 's', 4, '1'),
-	(12, 'teste', '', 123, 25, 34, '2024-01-23', '2024-01-23 02:03:40', 0, 's', 1, '1'),
-	(13, '', '', 0, 25, 34, '2024-01-23', '2024-01-23 02:06:28', 0, 's', 2, '1'),
-	(14, '', '', 0, 25, 34, '2024-01-23', '2024-01-23 02:06:37', 0, 'e', 4, '1'),
-	(15, '', '', 0, 25, 34, '2024-01-23', '2024-01-23 11:49:11', 0, 'e', 30, '1'),
-	(16, 'teste', '', 123, 25, 34, '2024-01-29', '2024-01-29 17:49:46', 0, 'e', 1, '1');
+INSERT INTO `operacoes` (`id`, `nome`, `observacoes`, `valor`, `id_caixa`, `id_usuario`, `data`, `data_criacao`, `tipo`, `id_carteira`, `excluido`) VALUES
+	(1, 'Curso teórico', '', 502, 25, 34, '2024-01-19', '2024-01-22 22:35:51', 'e', 2, '0'),
+	(2, 'Abastecimento moto', 'Lá no posto tal', 30, 25, 34, '2024-01-22', '2024-01-22 22:51:20', 's', 1, '0'),
+	(4, '', '', 0, 25, 34, '2024-01-23', '2024-01-22 23:00:17', 'e', 3, '1'),
+	(5, 'teste', '', 12, 25, 34, '2024-01-23', '2024-01-22 23:14:17', 'e', 3, '1'),
+	(6, 'KIT Completo', 'José dos Anzóis', 50, 30, 34, '2024-01-23', '2024-01-23 00:26:38', 'e', 1, '0'),
+	(7, 'Abastecimento moto', '', 30, 30, 34, '2024-01-23', '2024-01-23 00:27:14', 's', 1, '0'),
+	(8, 'Livrinho', 'Da dona Maria', 20, 30, 34, '2024-01-22', '2024-01-23 00:27:55', 'e', 2, '0'),
+	(9, 'Teste', '', 100, 25, 34, '2024-01-23', '2024-01-23 00:41:09', 'e', 1, '1'),
+	(10, 'teste', '', 80, 25, 34, '2024-01-23', '2024-01-23 01:33:44', 'e', 1, '1'),
+	(11, '', '', 0, 25, 34, '2024-01-23', '2024-01-23 02:03:13', 's', 4, '1'),
+	(12, 'teste', '', 123, 25, 34, '2024-01-23', '2024-01-23 02:03:40', 's', 1, '1'),
+	(13, '', '', 0, 25, 34, '2024-01-23', '2024-01-23 02:06:28', 's', 2, '1'),
+	(14, '', '', 0, 25, 34, '2024-01-23', '2024-01-23 02:06:37', 'e', 4, '1'),
+	(15, '', '', 0, 25, 34, '2024-01-23', '2024-01-23 11:49:11', 'e', 30, '1'),
+	(16, 'teste', '', 123, 25, 34, '2024-01-29', '2024-01-29 17:49:46', 'e', 1, '1'),
+	(17, 'teste', '123123123123', 10, 25, 33, '2024-02-02', '2024-02-05 16:11:27', 'e', 1, '1'),
+	(18, 'teste', '', 12, 25, 33, '2024-02-05', '2024-02-05 16:26:24', 'e', 1, '1'),
+	(19, 'arthur', '', 12, 25, 34, '2024-02-05', '2024-02-05 16:26:59', 'e', 1, '1'),
+	(20, 'teste', '', 2, NULL, 34, '2024-02-05', '2024-02-05 16:54:08', 'e', 1, '0'),
+	(21, 'jaguariuna2', '0', 1, 32, 34, '2024-02-05', '2024-02-05 17:20:27', 'e', 2, '0'),
+	(22, 'teste', '', 12, 32, 34, '2024-02-11', '2024-02-11 00:19:34', 's', 1, '0'),
+	(23, '', '', 0, 32, 34, '2024-02-11', '2024-02-11 00:22:41', 'e', 1, '1'),
+	(24, '', '', 0, 32, 34, '2024-02-11', '2024-02-11 00:22:51', 'e', 2, '1'),
+	(25, '', '', 0, 32, 34, '2024-02-11', '2024-02-11 00:24:14', 's', 1, '1'),
+	(26, 'teste', '', 1, 32, 34, '2024-02-11', '2024-02-11 19:08:02', 'e', 1, '0'),
+	(27, '212asdfas', 'asdf ', 1231, 32, 34, '2024-02-12', '2024-02-12 00:09:58', 'e', 1, '1'),
+	(28, 'Grande', '', 12, 32, 34, '2024-02-12', '2024-02-12 00:15:18', 's', 1, '0'),
+	(29, 'teste cc', '', 11, 32, 34, '2024-02-12', '2024-02-12 00:22:55', 'e', 3, '0');
 
 CREATE TABLE IF NOT EXISTS `permissoes` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
@@ -158,13 +172,14 @@ CREATE TABLE IF NOT EXISTS `usuarios` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `usuario` (`usuario`),
   KEY `FK_usuarios_escritorios_2` (`id_escritorio`),
-  CONSTRAINT `FK_usuarios_escritorios_2` FOREIGN KEY (`id_escritorio`) REFERENCES `escritorios` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=35 DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+  CONSTRAINT `FK_usuarios_escritorios_2` FOREIGN KEY (`id_escritorio`) REFERENCES `escritorios` (`id`) ON UPDATE NO ACTION
+) ENGINE=InnoDB AUTO_INCREMENT=41 DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
 INSERT INTO `usuarios` (`id`, `nome`, `usuario`, `senha`, `id_escritorio`) VALUES
 	(1, 'ADMIN', 'admin', '$2y$10$XOzZr6CEkUicXO1koRCu2eHp7Xnw3YhzN3RSsNlgETaFUrUXN9GsO', 1),
 	(33, 'Thiago Serra', 'thiagoserra', '$2y$10$zk16kGbVIkVmIPaJOo1P6u18lu9eRQAiksdkAFj.L39ZOUjnA03P6', 2),
-	(34, 'Arthur Rogado Reis', 'arthurrogado', '$2y$10$QAwHNHSDaSC5CUec5VagFOY309NHnF6slO8bBXHuLfqWAoRW/oTeG', 2);
+	(34, 'Arthur Rogado Reis', 'arthurrogado', '$2y$10$QAwHNHSDaSC5CUec5VagFOY309NHnF6slO8bBXHuLfqWAoRW/oTeG', 3),
+	(35, 'Carlos', 'carlos', '$2y$10$R.sbYhoLszlTrCG4TFGfMOZVXYaC/j/R6YIXk6V14kxKctRi3vzVO', 3);
 
 /*!40103 SET TIME_ZONE=IFNULL(@OLD_TIME_ZONE, 'system') */;
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;
