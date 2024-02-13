@@ -14,9 +14,27 @@ class Permissao extends Model {
         );
     }
 
+    public static function getAcoesPorControlador()
+    {
+        return self::select(
+            "acoes_sistema",
+            ["*"],
+            [],
+            "ORDER BY controlador"
+        );
+    }
+
+    public static function getPermissoes()
+    {
+        return self::select(
+            "permissoes",
+            ["*"]
+        );
+    }
+
     public static function usuarioTemPermissao($id_usuario, $acao)
     {
-        return true;
+        // return true;
         $status = self::select(
             "permissoes",
             ["*"],

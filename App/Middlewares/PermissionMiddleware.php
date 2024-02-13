@@ -89,7 +89,7 @@ class PermissionMiddleware {
 
     }
 
-    public static function checkPermissions($action) {
+    public static function checkPermissions($action, $message = "Você não tem permissão!") {
         // Modelo de permissões: tabela de ações no sistema e tabela intermediária entre essas ações e usuários que definem as permissões
         $current_user = Usuario::checkLogin();
 
@@ -109,7 +109,7 @@ class PermissionMiddleware {
         $tem_permissao = Permissao::usuarioTemPermissao($current_user->id, $action);
 
         if(!$tem_permissao) {
-            echo json_encode(["message" => "Você não tem permissão!", "ok" => false]);
+            echo json_encode(["message" => $message, "ok" => false]);
             exit;
         }
 

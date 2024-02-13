@@ -229,11 +229,17 @@ class Route extends Bootstrap {
             'action' => 'getCarteirasDeCaixa'
         ]);
 
+        // PERMISSÕES
+            // api
+        array_push($routes, [
+            'route' => '/api/permissoes/get_acoes_por_controlador',
+            'controller' => 'PermissoesController',
+            'action' => 'getAcoesPorControlador'
+        ]);
+
         $this->setRoutes($routes);
     }
 
 
 
 }
-
-?>

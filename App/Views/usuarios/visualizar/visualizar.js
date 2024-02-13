@@ -6,12 +6,13 @@ const httpClient = new HttpClient();
 
 
 
-class Visulizar {
+class Visualizar {
 
     constructor() {
         this.httpClient = new HttpClient();
         this.preencher_escritorios();
         this.preencher_detalhes_usuario();
+        this.renderizarPermissoes();
 
         // Escutar eventos
         document.querySelector('#modalMudarSenha').addEventListener('click', (e) => {
@@ -24,11 +25,17 @@ class Visulizar {
             this.editar();
         })
 
+        this.makeLis
+
         let search = new SearchableSelect('#cnpj_escritorio');
 
         // Salvar informações do formulário para restaurar caso o usuário cancele a edição
         this.dados_previos = new FormData(document.querySelector('#formVisualizarPessoa'))
 
+    }
+
+    makeListener(query, event, callback) {
+        document.querySelector(query).addEventListener(event, callback)
     }
 
     preencher_detalhes_usuario() {
@@ -90,7 +97,7 @@ class Visulizar {
         // Salvar usuário
         let formdata = new FormData(document.querySelector('#formVisualizarPessoa'))
         formdata.append('id', this.httpClient.getParams().id)
-        httpClient.makeRequest('/api/usuarios/editar', formdata)
+        this.httpClient.makeRequest('/api/usuarios/editar', formdata)
         .then(response => {
             if (response.ok) {
                 // atualizar a página para mostrar os dados atualizados
@@ -104,9 +111,9 @@ class Visulizar {
         document.querySelector('#btn_editar').classList.remove('hidden')
         this.btn_salvar.remove()
         this.btn_cancelar.remove()
-        httpClient.disableAllInputs()
+        this.httpClient.disableAllInputs()
         // Preencher os inputs com os dados do usuário novamente
-        httpClient.fillAllInputs(this.dados_previos)
+        this.httpClient.fillAllInputs(this.dados_previos)
     }
 
     abrir_modal_mudar_senha() {
@@ -145,7 +152,7 @@ class Visulizar {
         }
 
         // Mudar senha
-        httpClient.makeRequest('/api/usuarios/mudar_senha', {id: this.httpClient.getParams().id, senha: senha})
+        this.httpClient.makeRequest('/api/usuarios/mudar_senha', {id: this.httpClient.getParams().id, senha: senha})
         .then(response => {
             if (response.ok) {
                 this.modal_mudar_senha.close()
@@ -154,6 +161,77 @@ class Visulizar {
 
     }
 
+    renderizarPermissoes() {
+        this.httpClient.makeRequest("/api/permissoes/get_acoes_por_controlador")
+        .then(response => {
+            console.log(response);
+            if(response.ok) {
+                document.querySelector("#loadingAcoes").remove();
+                let acoes = response.acoes;
+
+                // <div class="w3-col s12 m6 l4 w3-border w3-padding-small">
+                //     <h1 class="w3-large bg-primary w3-padding-small">CaixasController</h1>
+                //     <div class="customcheckbox">
+                //         <input type="checkbox" id="abrirCaixa" name="caixasController">
+                //         <label for="abrirCaixa"></label>
+                //         <p>abrirCaixa</p>
+                //         <span class="info">Permite abrir um caixa.</span>
+                //     </div>
+                //     <div class="customcheckbox">
+                //         <input type="checkbox" id="editarCaixa" name="caixasController">
+                //         <label for="editarCaixa"></label>
+                //         <p>editarCaixa</p>
+                //         <div class="info">Permite editar o nome do caixa.</div>
+                //     </div>
+
+                // </div>
+
+                let controllers = [...new Set(acoes.map(acao => acao.controlador))];
+                acoes.forEach(acao => {
+
+                    if(!document.querySelector(`#controller_${acao.controlador}`)) {
+                        let controller = document.createElement('div')
+                        controller.innerHTML = /*html*/ `
+                            <div class="w3-col s12 m6 l4 w3-border w3-padding-small" id="controller_${acao.controlador}">
+                                <h1 class="w3-large bg-primary w3-padding-small">${acao.controlador.replace("Controller", "")}</h1>
+                            </div>
+                        `;
+                        document.querySelector('#acoes').appendChild(controller);
+                    }
+
+                    let customcheckbox_acao = document.createElement('div')
+                    customcheckbox_acao.innerHTML = /*html*/ `
+                        <div class="customcheckbox">
+                            <input type="checkbox" id="${acao.controlador+acao.metodo}" name="acoes[]" value="${acao.id}">
+                            <label for="${acao.controlador+acao.metodo}"></label>
+                            <p>${acao.metodo}</p>
+                            ${acao.descricao ? '<span class="info">'+acao.descricao+'</span>' : ''}
+                        </div>
+                    `;
+                    document.querySelector(`#controller_${acao.controlador}`).appendChild(customcheckbox_acao);
+
+
+                    let checkbox = document.createElement('input');
+                    checkbox.type = 'checkbox';
+                    checkbox.name = 'acoes[]';
+                    checkbox.value = acao.id;
+                    checkbox.checked = acao.tem_acesso;
+                    
+                })
+                
+            }
+        })
+    }
+
+    atualizarAcao(acao_id, tem_acesso) {
+        this.httpClient.makeRequest('/api/permissoes/atualizar_acao', {usuario_id: this.httpClient.getParams().id, acao_id: acao_id, tem_acesso: tem_acesso})
+        .then(response => {
+            if(response.ok) {
+                new Info('Ação atualizada com sucesso', 'success')
+            }
+        })
+    }
+
 }
 
-new Visulizar();
+new Visualizar();

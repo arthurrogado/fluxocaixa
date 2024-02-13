@@ -190,7 +190,7 @@ class UsuariosController
         } else if (PermissionMiddleware::isEscritorio()) {
             // Se for escritório, só pode excluir usuários do próprio escritório
             if(!PermissionMiddleware::checkConditions(["id" => Usuario::visualizarUsuario($id)->id_escritorio])) {
-                throw new MyAppException("Você não tem permissão para excluir esse usuário");
+                throw new MyAppException("Você não tem permissão para excluir esse usuário. Entre como o escritório do usuário para isso.");
             }
         } else {
             echo json_encode(array('ok' => false, 'message' => "Você não tem permissão para excluir usuários"));

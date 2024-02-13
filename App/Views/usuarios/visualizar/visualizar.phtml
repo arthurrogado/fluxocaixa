@@ -1,3 +1,9 @@
+<?php
+use App\Models\Usuario;
+use App\Controllers\PermissaoController;
+use App\Middlewares\PermissionMiddleware;
+?>
+
 <section>
     <div class="card">
 
@@ -18,10 +24,10 @@
             </div>
 
             <?php
-                // Se for admin, mostrar o campo de cnpj, se for escritório, não mostrar.
-                use App\Middlewares\PermissionMiddleware;
-                if(PermissionMiddleware::isAdmin()):
-            ?>
+            // Se for admin, mostrar o campo de cnpj, se for escritório, não mostrar.
+
+            if (PermissionMiddleware::isAdmin()):
+                ?>
 
                 <div class="input-field">
                     <select name="cnpj_escritorio" id="cnpj_escritorio" disabled>
@@ -30,16 +36,56 @@
                     <label>Escritório</label>
                 </div>
 
-            <?php
-                endif;
+                <?php
+            endif;
             ?>
 
-            <button class="btn btn-primary" id="btn_editar" type="button"> <i class="fa fa-pencil"></i> Editar</button>            
+            <button class="btn btn-primary" id="btn_editar" type="button"> <i class="fa fa-pencil"></i> Editar</button>
             <a href="#" id="modalMudarSenha">Mudar senha</a>
 
             <span class="loading" id="loadingVisualizarUsuario"></span>
 
         </form>
+
+    </div>
+
+    <div class="card">
+
+        <div class="bg-primary w3-text-white w3-padding w3-round-large w3-large w3-center w3-margin-bottom">
+            Permissões
+        </div>
+
+        <div class="w3-container">
+
+            <div class="w3-row" id="acoes">
+
+                <!-- <div class="w3-col s12 m6 l4 w3-border w3-padding-small">
+                    <h1 class="w3-large bg-primary w3-padding-small">CaixasController</h1>
+                    <div class="customcheckbox">
+                        <input type="checkbox" id="abrirCaixa" name="caixasController">
+                        <label for="abrirCaixa"></label>
+                        <p>abrirCaixa</p>
+                        <span class="info">Permite abrir um caixa.</span>
+                    </div>
+                    <div class="customcheckbox">
+                        <input type="checkbox" id="editarCaixa" name="caixasController">
+                        <label for="editarCaixa"></label>
+                        <p>editarCaixa</p>
+                        <div class="info">Permite editar o nome do caixa.</div>
+                    </div>
+
+                </div> -->
+
+            </div>
+
+            <div class="loading" id="loadingAcoes"></div>
+        </div>
+
+        <div class="w3-container">
+            <button class="btn btn-primary" id="salvar">
+                <i class="fa fa-save"></i> Atualizar permissões
+            </button>
+        </div>
 
     </div>
 

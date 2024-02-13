@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
     <style>
         * {
             padding: 0;
@@ -21,12 +22,13 @@
         }
         .customcheckbox{
             display: flex;
+            align-items: center;
         }
         .customcheckbox label {
             background-color: #cfcfcf;
             display: block;
-            width: 200px;
-            height: 100px;
+            width: 60px;
+            height: 30px;
             border-radius: 200px;
             cursor: pointer;
             position: relative;
@@ -35,10 +37,11 @@
             position: absolute;
             content: '';
             background-color: #fff;
-            width: 90px;
-            height: 90px;
+            /* width: 45%; */
+            height: 80%;
+            aspect-ratio: 1/1;
             border-radius: 100%;
-            margin: 5px;
+            margin: 5%;
             transition: .2s;
         }
         .customcheckbox input:checked + label{
@@ -46,10 +49,16 @@
         }
         .customcheckbox input:checked + label::before{
             background-color: #fff;
-            transform: translateX(100px);
+            transform: translateX(30px);
         }
         .customcheckbox input{
             display: none;
+        }
+        /* Deixar texto do label ao lado do check */
+        .customcheckbox p {
+            margin-left: 10px;
+            display: flex;
+            align-items: center;
         }
     </style>
 </head>
@@ -57,10 +66,13 @@
 <body>
 
     <div class="container">
-        <div class="customcheckbox">
+
+        <div class="customcheckbox w3-border w3-border w3-padding">
             <input type="checkbox" id="check">
             <label for="check"></label>
+            <p>Teste</p>
         </div>
+
     </div>
 
 </body>

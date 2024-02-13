@@ -30,6 +30,8 @@
     --light-color-4: hsl(var(
     --hue), 100%, 98%);
 
+    --neutral-color-0: hsl(var(
+    --hue), 10%, 100%);
     --neutral-color-1: hsl(var(
     --hue), 10%, 80%);
     --neutral-color-2: hsl(var(
@@ -68,6 +70,8 @@
 }
 .bg-primary {
     background: var(--primary-color);
+    /* color: white; */
+    color: var(--neutral-color-0);
 }
 
 .secondary {

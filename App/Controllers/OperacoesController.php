@@ -20,11 +20,11 @@ class OperacoesController
 
         // Permissões:
         // - Usuário deve ter permissão para visualizar operações do caixa
+        PermissionMiddleware::checkPermissions("getOperacoesCaixa", "Você não tem permissão para visualizar operações do caixa.");
 
         $id_caixa = $this->getPost('id_caixa');
 
         // Verificar se o caixa (id_caixa) tem o mesmo escritório do usuário logado
-        $classCaixa = new Caixa();
         $caixa = Caixa::visualizarCaixa($id_caixa);
         if(!$caixa) throw new MyAppException("Erro: ao buscar caixa.");
         
