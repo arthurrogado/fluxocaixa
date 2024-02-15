@@ -68,8 +68,12 @@ class Permissao extends Model {
     {
         return self::insert(
             "permissoes",
-            ["id_usuario", "id_metodo"],
-            [$id_usuario, $id_metodo]
+            [
+                "id_usuario" => $id_usuario,
+                "id_metodo" => $id_metodo
+            ]
+            // ["id_usuario", "id_metodo"],
+            // [$id_usuario, $id_metodo]
         );
     }
 

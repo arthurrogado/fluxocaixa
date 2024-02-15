@@ -16,7 +16,16 @@ class Carteira extends Model
     // - Porém o escritório dispõe de uma maquininha de cartão de crédito/débito, que pode apenas receber. Logo essa carteira tem como true apenas o parâmetro entrada.
     // - E o mesmo escritório dispõe de um cartão de crédito, que neste caso só pode ter saídas, logo nessa carteira o atributo entrada é false (0).
 
-    public static function getCarteiras($id_escritorio)
+    public static function getCarteiras()
+    {
+        return self::select(
+            "carteiras",
+            ["*"],
+            ["ativa" => '1', "id_escritorio" => NULL]
+        );
+    }
+
+    public static function getCarteirasDeEscritorio($id_escritorio)
     {
         return self::select(
             "carteiras",
@@ -24,7 +33,6 @@ class Carteira extends Model
             // "(id_escritorio = $id_escritorio OR id_escritorio = NULL) AND ativa='1'"
             [
                 "id_escritorio" => $id_escritorio,
-                "OR" => ["id_escritorio" => NULL],
                 "ativa" => '1'
             ]
         );
@@ -48,6 +56,24 @@ class Carteira extends Model
             "carteiras",
             ["*"],
             ["id" => $id]
+        );
+    }
+
+    public static function criarCarteira($nome, $observacoes, $id_escritorio, $permite_entrada, $permite_saida)
+    {
+        return self::insert(
+            "carteiras",
+            ["nome" => $nome, "observacoes" => $observacoes, "id_escritorio" => $id_escritorio, "entrada" => $permite_entrada, "saida" => $permite_saida],
+        );
+    }
+
+    public static function editarCarteira($id_carteira, $nome, $observacoes, $id_escritorio, $permite_entrada, $permite_saida, $ativa)
+    {
+        return self::update(
+            "carteiras",
+            ["nome", "observacoes", "id_escritorio", "entrada", "saida", "ativa"],
+            [$nome, $observacoes, $id_escritorio, $permite_entrada, $permite_saida, $ativa],
+            "id = $id_carteira"
         );
     }
 

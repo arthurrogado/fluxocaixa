@@ -10,11 +10,16 @@ class Escritorio extends Model {
         return self::insert(
             "escritorios",
             [
-                "nome", "cnpj", "observacoes"
-            ],
-            [
-                $nome, $cnpj, $observacoes
+                "nome" => $nome,
+                "cnpj" => $cnpj,
+                "observacoes" => $observacoes
             ]
+            // [
+            //     "nome", "cnpj", "observacoes"
+            // ],
+            // [
+            //     $nome, $cnpj, $observacoes
+            // ]
         );
     }
 

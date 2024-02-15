@@ -14,10 +14,10 @@ class Usuario extends Model
         return self::insert(
             "usuarios",
             [
-                "nome", "usuario", "senha", "id_escritorio"
-            ],
-            [
-                $nome, $usuario, $senha_hash, $id_escritorio
+                "nome" => $nome, 
+                "usuario" => $usuario, 
+                "senha" => $senha_hash, 
+                "id_escritorio" => $id_escritorio
             ]
         );
     }

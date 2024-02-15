@@ -217,6 +217,16 @@ class Route extends Bootstrap {
         ]);
 
         // CARTEIRAS
+            // pages
+        array_push($routes, [
+            'route' => '/carteiras',
+            'redirect' => '/carteiras/listar'
+        ]);
+        array_push($routes, [
+            'route' => '/carteiras/listar',
+            'controller' => 'Pages/CarteirasPages',
+            'action' => 'listar'
+        ]);
             // api
         array_push($routes, [
             'route' => '/api/carteiras/obter_de_escritorio',
@@ -227,6 +237,16 @@ class Route extends Bootstrap {
             'route' => '/api/carteiras/obter_de_caixa',
             'controller' => 'CarteirasController',
             'action' => 'getCarteirasDeCaixa'
+        ]);
+        array_push($routes, [
+            'route' => '/api/carteiras/criar',
+            'controller' => 'CarteirasController',
+            'action' => 'criarCarteira'
+        ]);
+        array_push($routes, [
+            'route' => '/api/carteiras/editar',
+            'controller' => 'CarteirasController',
+            'action' => 'editarCarteira'
         ]);
 
         // PERMISSÕES

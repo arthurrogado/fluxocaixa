@@ -39,17 +39,20 @@ abstract class Model {
 
     // Métodos genéricos para CRUD
 
-    public static function insert(string $table, array $columns, array $values) : int {
+    public static function insert(string $table, array $data) : int {
         try {
             self::getConn(); // Usar esse método estático para que a conexão seja feita, já que o método é estático (não depende de instância da classe)
-    
+
+            $columns = array_keys($data);
+            $values = array_values($data);
+
             $preparedValues = array_map(function($value) {
                 return ($value !== null) ? "'$value'" : 'NULL';
             }, $values);
-    
+
             $query = "INSERT INTO $table (".implode(", ", $columns).") VALUES (". implode(", ", $preparedValues). ")";
             // like: "INSERT INTO users (name, email) VALUES ('Durov', 'durov@telegram')";
-            
+
             $stmt = self::$conn->prepare($query);
             $result = $stmt->execute();
             // retonar o id do registro inserido

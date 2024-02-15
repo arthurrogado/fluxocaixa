@@ -11,11 +11,17 @@ class Caixa extends Model
         return self::insert(
             "caixas",
             [
-                "nome", "observacoes", "id_escritorio", "id_usuario_abertura"
-            ],
-            [
-                $nome, $observacoes, $id_escritorio, $id_usuario_abertura
+                "nome" => $nome, 
+                "observacoes" => $observacoes, 
+                "id_escritorio" => $id_escritorio, 
+                "id_usuario_abertura" => $id_usuario_abertura
             ]
+            // [
+            //     "nome", "observacoes", "id_escritorio", "id_usuario_abertura"
+            // ],
+            // [
+            //     $nome, $observacoes, $id_escritorio, $id_usuario_abertura
+            // ]
         );
     }
 

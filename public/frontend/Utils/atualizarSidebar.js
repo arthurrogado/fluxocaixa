@@ -68,6 +68,7 @@ function atualizarSidebar(){
                     [['/home', 'Home', 'fa-home']],
                     [['/usuarios/listar', 'Usuários', 'fa-users']],
                     [['/escritorio/visualizar?id='+usuario.id, "Meu escritório", 'fa-building']],
+                    [['/carteiras/listar', 'Carteiras', 'fa-money']],
                 ]
             }
 

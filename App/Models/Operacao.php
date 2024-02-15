@@ -11,10 +11,14 @@ class Operacao extends Model
         return self::insert(
             "operacoes",
             [
-                "nome", "observacoes", "valor", "id_caixa", "id_usuario", "data", "tipo", "id_carteira"
-            ],
-            [
-                $nome, $observacoes, $valor, $id_caixa, $id_usuario, $data, $tipo, $id_carteira
+                "nome" => $nome, 
+                "observacoes" => $observacoes, 
+                "valor" => $valor, 
+                "id_caixa" => $id_caixa, 
+                "id_usuario" => $id_usuario, 
+                "data" => $data, 
+                "tipo" => $tipo, 
+                "id_carteira" => $id_carteira
             ]
         );
     
