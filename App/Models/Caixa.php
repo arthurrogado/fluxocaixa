@@ -6,9 +6,9 @@ use MF\Model\Model;
 class Caixa extends Model
 {
 
-    public function abrirCaixa($nome, $observacoes, $id_escritorio, $id_usuario_abertura)
+    public static function abrirCaixa($nome, $observacoes, $id_escritorio, $id_usuario_abertura)
     {
-        return $this->insert(
+        return self::insert(
             "caixas",
             [
                 "nome", "observacoes", "id_escritorio", "id_usuario_abertura"
@@ -51,7 +51,7 @@ class Caixa extends Model
     {
         return self::delete(
             "caixas",
-            "id = $id"
+            ['id' => $id]
         );
     }
 

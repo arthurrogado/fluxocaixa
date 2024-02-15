@@ -55,7 +55,7 @@ abstract class Model {
             // retonar o id do registro inserido
             $id = self::$conn->lastInsertId();
             // return (["ok" => $result, "id" => $id]);
-            return $id;
+            return $id ? $id : $result;
         } catch (\Throwable $th) {
             // return (["ok" => false, "message" => $th->getMessage(), "line" => $th->getLine()]);
             throw new MyAppException("Erro ao inserir registro: ", $th);
@@ -204,7 +204,38 @@ abstract class Model {
         // Exemplo: update("users", ["name", "email"], ["Durov", "xxxxx@xxxxxxxx"], ["id" => 1]);
     }
 
-    public static function delete(string $table, string $where){
+    public static function delete(string $table, array $where = []) {
+        // Example: delete("users", ["id" => 1]);
+        try {
+            self::getConn(); // Usar esse método estático para que a conexão seja feita, já que o método é estático (não depende de instância da classe)
+            $query = "DELETE FROM $table";
+            if($where){
+                $query .= " WHERE ";
+                foreach ($where as $key => $value) { // Usar bindValue no where
+                    $query .= "$key = :$key";
+                    if (next($where)) {
+                        $query .= " AND ";
+                    }
+                }
+                $stmt = self::$conn->prepare($query);
+                foreach ($where as $key => $value) {
+                    $stmt->bindValue(":$key", $value);
+                }
+            } else {
+                // Se não houver where, não continuar, pois se não deleta tudo.
+                return false;
+            }
+            
+            $result = $stmt->execute();
+            return $result;
+        } catch (\Throwable $th) {
+            //throw $th;
+            // return (["ok" => false, "message" => $th->getMessage(), "line" => $th->getLine()]);
+            throw new MyAppException("Erro ao deletar registro.", $th);
+        }
+    }
+
+    public static function delete2(string $table, string $where){
         // Example: delete("users", "id = 1");
         try {
             self::getConn(); // Usar esse método estático para que a conexão seja feita, já que o método é estático (não depende de instância da classe)

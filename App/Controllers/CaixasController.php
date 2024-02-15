@@ -25,12 +25,14 @@ class CaixasController
         $id_escritorio = $usuario_atual->id_escritorio;
         $id_usuario_abertura = $usuario_atual->id;
 
-        $caixa = new Caixa();
-        $status = $caixa->abrirCaixa($nome, $observacoes, $id_escritorio, $id_usuario_abertura);
-        if($status['ok']) {
+        // $caixa = new Caixa();
+        $status = Caixa::abrirCaixa($nome, $observacoes, $id_escritorio, $id_usuario_abertura);
+
+        if($status) {
             echo json_encode(array('ok' => true, 'message' => "Caixa aberto com sucesso"));
         } else {
-            echo json_encode(array('ok' => false, 'message' => "Erro: " . $status['message'] ));
+            throw new MyAppException("Erro ao abrir caixa.");
+            // echo json_encode(array('ok' => false, 'message' => "Erro: " . $status['message'] ));
         }
 
     }
@@ -62,7 +64,7 @@ class CaixasController
     public function listarCaixas()
     {
         // Pegar todos os caixas abertos no escritório do usuário
-        PermissionMiddleware::checkPermissions('listarCaixas');
+        PermissionMiddleware::checkPermissions('listarCaixas', 'Você não tem permissão para listar caixas.');
         
         $usuario_atual = Usuario::checkLogin();
         $id_escritorio = $usuario_atual->id_escritorio;
@@ -117,17 +119,18 @@ class CaixasController
     {
         // Permissões: 
         // - Usuário deve ter permissão para excluir caixa
-        // PermissionMiddleware::checkPermissions('excluirCaixa');
+        PermissionMiddleware::checkPermissions('excluirCaixa', 'Você não tem permissão para excluir caixa.');
 
         $id = filter_input(INPUT_POST, 'id');
 
         // $caixa = Container::getModel('Caixa');
         $caixa = new Caixa();
-        $status = $caixa->excluirCaixa($id);
-        if($status['ok']) {
+        $status = Caixa::excluirCaixa($id);
+        if($status) {
             echo json_encode(array('ok' => true, 'message' => "Caixa excluído com sucesso"));
         } else {
-            echo json_encode(array('ok' => false, 'message' => "Erro: " . $status['message'] ));
+            throw new MyAppException("Erro ao excluir caixa.");
+            // echo json_encode(array('ok' => false, 'message' => "Erro: " . $status['message'] ));
         }
     }
 

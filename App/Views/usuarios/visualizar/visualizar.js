@@ -25,7 +25,7 @@ class Visualizar {
             this.editar();
         })
 
-        this.makeLis
+        this.makeListener("#salvarPermissoes", "click", _ => this.salvarPermissoes());
 
         let search = new SearchableSelect('#cnpj_escritorio');
 
@@ -162,38 +162,22 @@ class Visualizar {
     }
 
     renderizarPermissoes() {
-        this.httpClient.makeRequest("/api/permissoes/get_acoes_por_controlador")
+        this.httpClient.makeRequest("/api/permissoes/get_acoes_por_controlador_de_usuario", {id_usuario: this.httpClient.getParams().id})
         .then(response => {
             console.log(response);
             if(response.ok) {
                 document.querySelector("#loadingAcoes").remove();
                 let acoes = response.acoes;
 
-                // <div class="w3-col s12 m6 l4 w3-border w3-padding-small">
-                //     <h1 class="w3-large bg-primary w3-padding-small">CaixasController</h1>
-                //     <div class="customcheckbox">
-                //         <input type="checkbox" id="abrirCaixa" name="caixasController">
-                //         <label for="abrirCaixa"></label>
-                //         <p>abrirCaixa</p>
-                //         <span class="info">Permite abrir um caixa.</span>
-                //     </div>
-                //     <div class="customcheckbox">
-                //         <input type="checkbox" id="editarCaixa" name="caixasController">
-                //         <label for="editarCaixa"></label>
-                //         <p>editarCaixa</p>
-                //         <div class="info">Permite editar o nome do caixa.</div>
-                //     </div>
-
-                // </div>
-
-                let controllers = [...new Set(acoes.map(acao => acao.controlador))];
                 acoes.forEach(acao => {
 
                     if(!document.querySelector(`#controller_${acao.controlador}`)) {
                         let controller = document.createElement('div')
                         controller.innerHTML = /*html*/ `
-                            <div class="w3-col s12 m6 l4 w3-border w3-padding-small" id="controller_${acao.controlador}">
-                                <h1 class="w3-large bg-primary w3-padding-small">${acao.controlador.replace("Controller", "")}</h1>
+                            <div class="w3-col s12 m6 l4 w3-padding-small" id="controller_${acao.controlador}">
+                                <div class=" w3-round-medium">
+                                    <h1 class="w3-large bg-primary w3-padding-small">${acao.controlador.replace("Controller", "")}</h1>
+                                </div>
                             </div>
                         `;
                         document.querySelector('#acoes').appendChild(controller);
@@ -202,20 +186,19 @@ class Visualizar {
                     let customcheckbox_acao = document.createElement('div')
                     customcheckbox_acao.innerHTML = /*html*/ `
                         <div class="customcheckbox">
-                            <input type="checkbox" id="${acao.controlador+acao.metodo}" name="acoes[]" value="${acao.id}">
+                            <input type="checkbox" id="${acao.controlador+acao.metodo}" name="ids_acoes[]" value="${acao.id}" ${acao.temPermissao ? "checked" : null}>
                             <label for="${acao.controlador+acao.metodo}"></label>
                             <p>${acao.metodo}</p>
                             ${acao.descricao ? '<span class="info">'+acao.descricao+'</span>' : ''}
                         </div>
                     `;
-                    document.querySelector(`#controller_${acao.controlador}`).appendChild(customcheckbox_acao);
+                    document.querySelector(`#controller_${acao.controlador} div`).appendChild(customcheckbox_acao);
 
-
-                    let checkbox = document.createElement('input');
-                    checkbox.type = 'checkbox';
-                    checkbox.name = 'acoes[]';
-                    checkbox.value = acao.id;
-                    checkbox.checked = acao.tem_acesso;
+                    // let checkbox = document.createElement('input');
+                    // checkbox.type = 'checkbox';
+                    // checkbox.name = 'acoes[]';
+                    // checkbox.value = acao.id;
+                    // checkbox.checked = acao.tem_acesso;
                     
                 })
                 
@@ -223,14 +206,25 @@ class Visualizar {
         })
     }
 
-    atualizarAcao(acao_id, tem_acesso) {
-        this.httpClient.makeRequest('/api/permissoes/atualizar_acao', {usuario_id: this.httpClient.getParams().id, acao_id: acao_id, tem_acesso: tem_acesso})
+    salvarPermissoes() {
+        let formdata = new FormData(document.querySelector('#formPermissoes'))
+        formdata.append('id_usuario', this.httpClient.getParams().id)
+        this.httpClient.makeRequest('/api/permissoes/atualizar', formdata)
         .then(response => {
             if(response.ok) {
-                new Info('Ação atualizada com sucesso', 'success')
+
             }
         })
     }
+
+    // atualizarAcao(acao_id, tem_acesso) {
+    //     this.httpClient.makeRequest('/api/permissoes/atualizar_acao', {usuario_id: this.httpClient.getParams().id, acao_id: acao_id, tem_acesso: tem_acesso})
+    //     .then(response => {
+    //         if(response.ok) {
+    //             new Info('Ação atualizada com sucesso!', 'success')
+    //         }
+    //     })
+    // }
 
 }
 

@@ -236,6 +236,21 @@ class Route extends Bootstrap {
             'controller' => 'PermissoesController',
             'action' => 'getAcoesPorControlador'
         ]);
+        array_push($routes, [
+            'route' => '/api/permissoes/get_acoes_por_controlador_de_usuario',
+            'controller' => 'PermissoesController',
+            'action' => 'getAcoesPorControladorDeUsuario'
+        ]);
+        array_push($routes, [
+            'route' => '/api/permissoes/atualizar',
+            'controller' => 'PermissoesController',
+            'action' => 'atualizarPermissoesUsuario'
+        ]);
+        array_push($routes, [
+            'route' => '/api/permissoes/usuario_tem_permissao',
+            'controller' => 'PermissoesController',
+            'action' => 'usuarioTemPermissao'
+        ]);
 
         $this->setRoutes($routes);
     }

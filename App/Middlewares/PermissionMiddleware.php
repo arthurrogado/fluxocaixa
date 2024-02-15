@@ -6,6 +6,7 @@ namespace App\Middlewares;
 
 use App\Models\Permissao;
 use App\Models\Usuario;
+use MF\Controller\MyAppException;
 use MF\Model\Container as ModelContainer;
 use MF\Models\Container;
 
@@ -89,7 +90,35 @@ class PermissionMiddleware {
 
     }
 
-    public static function checkPermissions($action, $message = "Você não tem permissão!") {
+    public static function newcheckPermissions()
+    {
+        // Pegar o controlador e o método que está sendo chamado
+        // e verificar se o usuário tem permissão para acessar esse método
+        
+        // Se for master, pode fazer tudo
+        if(self::isAdmin()) return true;
+
+        $current_user = Usuario::checkLogin();
+        if(!$current_user) return false;
+        
+        // Pegar o método que está sendo chamado
+        $funcao = debug_backtrace()[1]['function'];
+        // Pegar o nome do controlador
+        $controller = debug_backtrace()[1]['class'];
+        // var_dump($controller, $funcao);
+
+        // Verificar se o usuário tem permissão para a ação.
+        // Usar classe Model de Permissao para isso
+        $id_metodo = Permissao::getIdMetodo($funcao);
+        if(!$id_metodo) throw new \Exception("Não achei a ação '$funcao' no sistema.");
+        
+        if(!Permissao::usuarioTemPermissao($current_user->id, $id_metodo)) {
+            throw new MyAppException("Você não tem permissão para a função '$funcao'.");
+        }
+    
+    }
+
+    public static function checkPermissions($metodo, $message = "Você não tem permissão!") {
         // Modelo de permissões: tabela de ações no sistema e tabela intermediária entre essas ações e usuários que definem as permissões
         $current_user = Usuario::checkLogin();
 
@@ -106,7 +135,10 @@ class PermissionMiddleware {
         // Usar classe Model de Permissao para isso
 
         // $permissao = ModelContainer::getModel("Permissao");
-        $tem_permissao = Permissao::usuarioTemPermissao($current_user->id, $action);
+        $id_metodo = Permissao::getIdMetodo($metodo);
+        if(!$id_metodo) throw new \Exception("Não achei a ação '$metodo' no sistema.");
+        
+        $tem_permissao = Permissao::usuarioTemPermissao($current_user->id, $id_metodo);
 
         if(!$tem_permissao) {
             echo json_encode(["message" => $message, "ok" => false]);

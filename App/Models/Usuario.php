@@ -86,7 +86,7 @@ class Usuario extends Model
     {
         return self::delete(
             "usuarios",
-            "id = $id"
+            ["id" => $id]
         );
     }
 

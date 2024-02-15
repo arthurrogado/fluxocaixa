@@ -58,7 +58,7 @@ class Escritorio extends Model {
     {
         return self::delete(
             "escritorios",
-            "id = $id"
+            ["id" => $id]
         );
     }
 

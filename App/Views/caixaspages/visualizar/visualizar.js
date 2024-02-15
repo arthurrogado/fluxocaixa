@@ -133,6 +133,13 @@ class VisualizarCaixa {
     }
 
     async abrirModalCriarOperacao(entrada='entrada') {
+
+        // // Verificar se o usuário tem a permissao para criar operações.
+        // this.httpClient.makeRequest('/api/permissoes/usuario_tem_permissao', {id_usuario: this.httpClient.getParams().id_usuario, metodo: 'criarOperacao'})
+        // .then(response => { 
+        //     console.log(response)
+        //      if(response.ok) return })
+
         let hoje = new Date();
         // Formatar para o formato do input
         hoje = hoje.toISOString().split('T')[0];
