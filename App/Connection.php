@@ -1,7 +1,7 @@
 <?php
 
 namespace App;
-use App\Config\Config;
+use App\Config\Secrets;
 
 class Connection {
 
@@ -9,9 +9,9 @@ class Connection {
         try{
 
             $conn = new \PDO(
-                "mysql: host=".Config::$host."; dbname=".Config::$dbname,
-                Config::$user,
-                Config::$password
+                "mysql: host=".Secrets::$host."; dbname=".Secrets::$dbname,
+                Secrets::$user,
+                Secrets::$password
             );
 
             return $conn;
