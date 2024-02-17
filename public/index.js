@@ -25,9 +25,11 @@ document.querySelectorAll('nav').forEach(el => {
 document.querySelector('#logout').addEventListener('click', () => {
     httpClient.makeRequest('/logout')
     .then(response => {
-        console.log(response)
+        if(response.ok) {
+            httpClient.navigateTo('/login')
+            atualizarInformacoesUsuario()
+        }
     })
-    httpClient.navigateTo('/login')
 })
 
 // Controlar o sidebar

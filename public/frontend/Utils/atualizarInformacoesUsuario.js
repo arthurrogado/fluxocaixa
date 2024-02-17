@@ -5,10 +5,15 @@ const httpClient = new HttpClient();
 const atualizarInformacoesUsuario = () => {
     httpClient.makeRequest('/api/usuario/check_login')
     .then(response => {
+        let nome = '';
+        let display = 'flex';
         if(response.ok){
-            let usuario = response.usuario;
-            document.querySelector('#nomeUsuario').textContent = usuario.nome;
+            nome = response.usuario.nome;
+        } else {
+            display = 'none';
         }
+        document.querySelector('#nomeUsuario').textContent = nome;
+        document.querySelector('#informacoesUsuario').style.display = display;
     });
 }
 

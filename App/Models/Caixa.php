@@ -55,12 +55,12 @@ class Caixa extends Model
 
     public static function excluirCaixa($id)
     {
-        return self::delete(
+        return self::update(
             "caixas",
-            ['id' => $id]
+            ["excluido"],
+            [1],
+            "id = $id"
         );
     }
 
 }
-
-?>

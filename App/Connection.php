@@ -2,6 +2,7 @@
 
 namespace App;
 use App\Config\Secrets;
+use MF\Controller\MyAppException;
 
 class Connection {
 
@@ -16,8 +17,11 @@ class Connection {
 
             return $conn;
 
-        } catch(\PDOException $e) {
-            echo $e->getMessage();
+        } catch(\Throwable $th) {
+            // echo $e->getMessage();
+            // return null;
+            // throw new \Exception("Erro ao conectar com o banco de dados.");
+            throw new MyAppException("Erro ao conectar com o banco de dados.", $th);
         }
     }
 

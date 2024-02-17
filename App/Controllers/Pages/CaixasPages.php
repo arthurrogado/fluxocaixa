@@ -9,8 +9,9 @@ class CaixasPages extends Action {
 
     public function listar()
     {
-        // Para poder listar os caixas, é necessário que não seja login com escritório/CNPJ (ou seja, que seja um usuário comum)
-        // PermissionMiddleware::checkIsUsuario();
+        // Para poder listar os caixas, é necessário que NÃO seja login com escritório/CNPJ (ou seja, que seja um usuário comum)
+        PermissionMiddleware::checkIsUsuario();
+        PermissionMiddleware::checkPermissions("listarCaixas", "Você não tem permissão para listar caixas.");
         $this->render('listar');
     }
 

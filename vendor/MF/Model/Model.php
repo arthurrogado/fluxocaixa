@@ -77,10 +77,7 @@ abstract class Model {
             //     "id" => 1,
             //     "OR" => [
             //         "nome" => "João",
-            //         "AND" => [
-            //             "idade" => [">" => 21],
-            //             "email" => "joao@example.com"
-            //         ]
+            //         "idade" => 25
             //     ]
             // ];
 
@@ -90,13 +87,14 @@ abstract class Model {
                 $conditions = [];
                 foreach ($where as $key => $value) {
                     // Verifica se é uma condição composta com operadores lógicos
-                    if (is_array($value)) {
-                        $subconditions = [];
+                    if (is_array($value)) { // se for um array, é uma condição composta
+                        $subconditions = []; // array para armazenar as condições compostas
                         foreach ($value as $subkey => $subvalue) {
-                            $subconditions[] = "$subkey = :$subkey";
+                            $subconditions[] = "$subkey = :$subkey"; // popula o array com as subcondições
                         }
-                        $conditions[] = "(" . implode(" OR ", $subconditions) . ")";
-                    } else {
+                        $conditions[] = "(" . implode(" OR ", $subconditions) . ")"; // 
+
+                    } else { // se não for um array, é uma condição simples
                         $conditions[] = "$key = :$key";
                     }
                 }
@@ -157,7 +155,6 @@ abstract class Model {
             $stmt->execute();
             $result = $stmt->fetch(\PDO::FETCH_OBJ);
     
-            // if (!$result) throw new MyAppException("Erro: registro não encontrado."); // Não usar exceção na camada de modelo, isso é responsabilidade do controller
             return $result;
         } catch (\Throwable $th) {
             throw new MyAppException("Erro ao selecionar registro: " . $th->getMessage() . " | line: " . $th->getLine() . " | " . $th->getFile());
