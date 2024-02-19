@@ -20,7 +20,7 @@ class OperacoesController
 
         // Permissões:
         // - Usuário deve ter permissão para visualizar operações do caixa
-        PermissionMiddleware::checkPermissions("getOperacoesCaixa", "Você não tem permissão para visualizar operações do caixa.");
+        PermissionMiddleware::checkPermission("getOperacoesCaixa", "Você não tem permissão para visualizar operações do caixa.");
 
         $id_caixa = $this->getPost('id_caixa');
 
@@ -75,7 +75,7 @@ class OperacoesController
 
         // Permissões: 
         // - Usuário deve ter permissão para criar operação
-        PermissionMiddleware::checkPermissions('criarOperacao');
+        PermissionMiddleware::checkPermission('criarOperacao');
 
         $nome = $this->getPost('nome');
         $observacoes = $this->getPost('observacoes');
@@ -114,7 +114,7 @@ class OperacoesController
     {
         // Permissões: 
         // - Usuário deve ter permissão para editar operação
-        PermissionMiddleware::checkPermissions('editarOperacao');
+        PermissionMiddleware::checkPermission('editarOperacao');
 
         $id = $this->getPost('id');
         $tipo = $this->getPost('tipo');
@@ -146,7 +146,7 @@ class OperacoesController
     {
         // Permissões: 
         // - Usuário deve ter permissão para excluir operação
-        PermissionMiddleware::checkPermissions('excluirOperacao');
+        PermissionMiddleware::checkPermission('excluirOperacao');
 
         $id = $this->getPost('id');
 

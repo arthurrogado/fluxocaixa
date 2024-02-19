@@ -34,6 +34,12 @@ class Caixa extends Model
         );
     }
 
+    public static function getCaixasAbertos($id_escritorio)
+    {
+        $sql = "SELECT * FROM caixas WHERE id_escritorio = :id_escritorio AND excluido = 0 AND (data_fechamento = '0000-00-00 00:00:00' OR data_fechamento IS NULL)";
+        return self::executeSelect($sql, [":id_escritorio" => $id_escritorio]);
+    }
+
     public static function visualizarCaixa($id)
     {
         return self::selectOne(

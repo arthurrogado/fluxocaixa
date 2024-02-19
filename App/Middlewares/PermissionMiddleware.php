@@ -90,7 +90,7 @@ class PermissionMiddleware {
 
     }
 
-    public static function newcheckPermissions()
+    public static function newcheckPermission($message = null)
     {
         // Pegar o controlador e o método que está sendo chamado
         // e verificar se o usuário tem permissão para acessar esse método
@@ -113,12 +113,13 @@ class PermissionMiddleware {
         if(!$id_metodo) throw new \Exception("Não achei a ação '$funcao' no sistema.");
         
         if(!Permissao::usuarioTemPermissao($current_user->id, $id_metodo)) {
-            throw new MyAppException("Você não tem permissão para a função '$funcao'.");
+            // throw new MyAppException("Você não tem permissão para a função '$funcao'.");
+            throw new MyAppException($message || "Você não tem permissão para a função '$funcao'.");
         }
     
     }
 
-    public static function checkPermissions($metodo, $message = "Você não tem permissão!") {
+    public static function checkPermission($metodo, $message = "Você não tem permissão!") {
         // Modelo de permissões: tabela de ações no sistema e tabela intermediária entre essas ações e usuários que definem as permissões
         $current_user = Usuario::checkLogin();
 

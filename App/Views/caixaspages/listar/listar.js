@@ -47,6 +47,7 @@ class ListarCaixas {
     obterCaixas() {
         this.httpClient.makeRequest('/api/caixas/listar')
         .then(response => {
+            console.log(response)
             if(response.ok) {
                 document.querySelector('#loadingTabelaCaixas')?.remove();
                 document.querySelector('#caixas').innerHTML = '';
@@ -63,7 +64,13 @@ class ListarCaixas {
                         class: 'btn-danger'
                     }
                 ]);
-            }
+            } else {
+                document.querySelector('#caixas').innerHTML = /*html*/`
+                    <div class="w3-panel w3-pale-blue w3-leftbar w3-padding w3-border-blue">
+                        <p>Sem nenhum caixa registrado</p>
+                    </div>
+                `;
+            }	
         })
     }
 

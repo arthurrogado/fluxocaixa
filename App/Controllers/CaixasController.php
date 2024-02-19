@@ -15,7 +15,7 @@ class CaixasController
 
         // Permissões: 
         // - Usuário deve ter permissão para abrir caixa
-        PermissionMiddleware::checkPermissions('abrirCaixa');
+        PermissionMiddleware::checkPermission('abrirCaixa');
 
         // $usuario_atual = Container::getModel('Usuario')::checkLogin();
         $usuario_atual = Usuario::checkLogin();
@@ -41,7 +41,7 @@ class CaixasController
     {
         // Permissões: 
         // - Usuário deve ter permissão para editar caixa
-        PermissionMiddleware::checkPermissions('editarCaixa');
+        PermissionMiddleware::checkPermission('editarCaixa');
 
         $id = filter_input(INPUT_POST, 'id');
 
@@ -64,17 +64,18 @@ class CaixasController
     public function listarCaixas()
     {
         // Pegar todos os caixas abertos no escritório do usuário
-        PermissionMiddleware::checkPermissions('listarCaixas', 'Você não tem permissão para listar caixas.');
+        PermissionMiddleware::checkPermission('listarCaixas', 'Você não tem permissão para listar caixas.');
         
         $usuario_atual = Usuario::checkLogin();
         $id_escritorio = $usuario_atual->id_escritorio;
         
         // $caixa = Container::getModel('Caixa');
-        $status = Caixa::getCaixas($id_escritorio);
+        $status = Caixa::getCaixasAbertos($id_escritorio);
         if($status) {
             echo json_encode(array('ok' => true, 'caixas' => $status));
         } else {
-            throw new MyAppException("Erro ao listar caixas.");
+            echo json_encode(array('ok' => false, 'message' => "Erro ao listar caixas.", 'caixas' => $status));
+            // throw new MyAppException("Não encontrei nenhum caixa.");
         }
         
     }
@@ -83,7 +84,7 @@ class CaixasController
     {
         // Permissões: 
         // - Usuário deve ter permissão para visualizar caixa
-        PermissionMiddleware::checkPermissions('visualizarCaixa');
+        PermissionMiddleware::checkPermission('visualizarCaixa');
 
         $id = filter_input(INPUT_POST, 'id');
         $caixa = new Caixa();
@@ -119,7 +120,7 @@ class CaixasController
     {
         // Permissões: 
         // - Usuário deve ter permissão para excluir caixa
-        PermissionMiddleware::checkPermissions('excluirCaixa', 'Você não tem permissão para excluir caixa.');
+        PermissionMiddleware::checkPermission('excluirCaixa', 'Você não tem permissão para excluir caixa.');
 
         $id = filter_input(INPUT_POST, 'id');
 
