@@ -12,6 +12,16 @@ O objetivo é atender a necessidade de projetos pequenos e médios, que iniciant
 
 Basicamente, o javascript faz as requisições http no arquivo public/api/index.php e o php faz o tratamento das requisições e retorna os dados em json.
 
+## Sumário:
+- [Fluxos de requisição](#fluxos-de-requisição)
+    - [Views](#views) (renderização de páginas)
+    - [Controllers](#controllers)
+    - [Models](#models)
+- [Estrutura de pastas](#estrutura-de-pastas)
+- [Sobre o miniframeword (vendor/MF)](#sobre-o-miniframeword-vendormf)
+- [Utilização](#utilização)
+- [Observações](#observações)
+
 ## Fluxos de requisição:
 
 ### **Views**
